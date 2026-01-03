@@ -8,8 +8,9 @@ export function style(text: string, styles: string[]): string {
 }
 
 export function clearScreen() {
-  process.stdout.write("\x1b[2J");
-  process.stdout.write("\x1b[0;0H");
+  process.stdout.write(Styles.clearScreen);
+
+  process.stdout.write(Styles.cursorHome);
 }
 
 export function cleanUp() {

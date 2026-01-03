@@ -19,28 +19,29 @@ export async function createUI() {
 
   clearScreen();
 
-  process.stdout.write("Creating a new file/directory");
-  process.stdout.write("\n");
-  process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
-
   const handleKeyPress = async (key: string) => {
+    // Escape key
     if (key === "\x1b") {
       cleanUp();
       clearScreen();
       process.exit(0);
     }
 
+    // Enter key
     if (key === "\r") {
       const result = await createItem(state);
 
       cleanUp();
       clearScreen();
 
-      process.stdout.write(style(result.message, [Styles.red]) + "\n");
+      process.stdout.write(
+        style(result.message, [result.success ? Styles.green : Styles.red]) +
+          "\n"
+      );
       process.exit(result.success ? 0 : 1);
     } else {
       state.text += key;
-      process.stdout.write(key);
+      render(state);
     }
   };
 
@@ -52,6 +53,8 @@ export async function createUI() {
   // without this, we would only get streams once enter is pressed
   process.stdin.setRawMode(true);
   process.stdin.resume();
+
+  render(state);
 }
 
 const createItem = async (state: State) => {
@@ -75,3 +78,24 @@ const createItem = async (state: State) => {
     message: "File/directory created successfully",
   };
 };
+
+function render(state: State) {
+  clearScreen();
+
+  // Header
+  process.stdout.write("Creating a new file/directory");
+  process.stdout.write("\n");
+
+  //   Text field
+  process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
+  process.stdout.write(style(state.text, [Styles.reset]));
+  process.stdout.write("\n");
+
+  //   Footer
+  process.stdout.write(
+    style("\n" + "Enter to create | Escape to cancel", [Styles.dim])
+  );
+
+  const cursorCol = "Name: ".length + state.text.length + 1;
+  process.stdout.write(`\x1b[2;${cursorCol}H`);
+}
