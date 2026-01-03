@@ -1,1 +1,18 @@
-todos.txt
+node_modules/
+
+dist/
+
+# bun.lockb
+
+.DS_Store
+
+.idea/
+.vscode/
+*.swp
+*.swo
+
+.env
+.env.local
+
+# My personal todos
+todo.txt
