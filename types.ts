@@ -10,17 +10,9 @@ export type State = {
   cursorPosition: number;
 };
 
-export const state: State = {
-  text: "",
-  focusedField: 0,
-  isFile: false,
-  prefix: true,
-  cursorPosition: 0,
-};
-
 export const Styles = {
   bold: "\x1b[1m",
   green: "\x1b[32m",
-
+  red: "\x1b[31m",
   reset: "\x1b[0m",
 };

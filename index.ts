@@ -1,10 +1,8 @@
 #!/usr/bin/env bun
 import { parseArgs } from "util";
-import { Commands, State, state, Styles } from "./types";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
-import { cleanUp, clearScreen, showHelpMessage, style } from "./utils";
-import { create } from "./ui/create";
+import { Commands } from "./types";
+import { showHelpMessage } from "./utils";
+import { createUI } from "./ui/create";
 
 async function main() {
   const { values: flags, positionals } = parseArgs({
@@ -28,7 +26,7 @@ async function main() {
         showHelpMessage(command);
         process.exit(0);
       }
-      await create();
+      await createUI();
       break;
     default:
       if (flags.help) {

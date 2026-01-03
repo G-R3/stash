@@ -1,4 +1,4 @@
-import { State, state, Styles } from "../types";
+import { State, Styles } from "../types";
 import { cleanUp, clearScreen, style } from "../utils";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
@@ -8,10 +8,19 @@ import { join } from "path";
  * Can chose between creating a file or a directory and if file/directory should
  * be prefixed with the current date.
  **/
-export async function create() {
-  clearScreen();
-  console.log("Creating a new file/directory");
+export async function createUI() {
+  const state: State = {
+    text: "",
+    focusedField: 0,
+    isFile: false,
+    prefix: true,
+    cursorPosition: 0,
+  };
 
+  clearScreen();
+
+  process.stdout.write("Creating a new file/directory");
+  process.stdout.write("\n");
   process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
 
   const handleKeyPress = async (key: string) => {
@@ -22,12 +31,13 @@ export async function create() {
     }
 
     if (key === "\r") {
-      console.log("Current State: ", state);
-      await createItem(state);
+      const result = await createItem(state);
 
       cleanUp();
       clearScreen();
-      process.exit(0);
+
+      process.stdout.write(style(result.message, [Styles.red]) + "\n");
+      process.exit(result.success ? 0 : 1);
     } else {
       state.text += key;
       process.stdout.write(key);
@@ -45,16 +55,23 @@ export async function create() {
 }
 
 const createItem = async (state: State) => {
-  console.log("Creating item: ", state);
-  if (existsSync(join(process.cwd(), state.text))) {
-    console.log("File/directory already exists");
-    return;
-  }
-  if (state.isFile) {
-    writeFileSync(state.text, "");
-  } else {
-    mkdirSync(state.text);
+  const fullPath = join(process.cwd(), state.text);
+
+  if (existsSync(fullPath)) {
+    return {
+      success: false,
+      message: "File/directory already exists",
+    };
   }
 
-  return { success: true, message: "Item created successfully" };
+  if (state.isFile) {
+    writeFileSync(fullPath, "", { encoding: "utf-8" });
+  } else {
+    mkdirSync(fullPath, { recursive: true });
+  }
+
+  return {
+    success: true,
+    message: "File/directory created successfully",
+  };
 };
