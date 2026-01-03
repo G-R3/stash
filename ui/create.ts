@@ -82,16 +82,13 @@ const createItem = async (state: State) => {
 function render(state: State) {
   clearScreen();
 
-  // Header
   process.stdout.write("Creating a new file/directory");
   process.stdout.write("\n");
 
-  //   Text field
   process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
   process.stdout.write(style(state.text, [Styles.reset]));
   process.stdout.write("\n");
 
-  //   Footer
   process.stdout.write(
     style("\n" + "Enter to create | Escape to cancel", [Styles.dim])
   );
