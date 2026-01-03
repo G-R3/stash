@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
 import { parseArgs } from "util";
+import { Commands, State, state, Styles } from "./types";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { join } from "path";
+import { cleanUp, clearScreen, showHelpMessage, style } from "./utils";
+import { create } from "./ui/create";
 
-enum Commands {
-  CREATE = "create",
-}
-
-function main() {
+async function main() {
   const { values: flags, positionals } = parseArgs({
     args: Bun.argv,
     options: {
@@ -24,40 +25,14 @@ function main() {
   switch (command) {
     case Commands.CREATE:
       if (flags.help) {
-        console.log(`
-                Usage: stash create
-                
-                Open interactive TUI to create a new file/directory
-
-                Flags:
-                -h, --help  Show help message and exit
-        `);
-
+        showHelpMessage(command);
         process.exit(0);
       }
-      create();
+      await create();
       break;
     default:
       if (flags.help) {
-        console.log(`
-            Usage: stash [command] [query]
-
-            Run an interactive TUI to browse, search, and manage stashed files/directories.
-
-            Commands:
-              create          Open interactive TUI to create a new file/directory
-            
-            Arguments:
-              [query]         Open interactive TUI with this query as the initial search
-            
-            Options:
-              -h, --help      Display this message and exit
-            
-            Examples:
-              stash           Browse and search all items
-              stash notes     Browse and search with "notes" as the initial search
-              stash create    Create a new file or directory
-        `);
+        showHelpMessage(command);
         process.exit(0);
       }
       if (command) {
@@ -70,15 +45,6 @@ function main() {
 }
 
 /**
- * Handles rendering the create TUI.
- * Can chose between creating a file or a directory and if file/directory should
- * be prefixed with the current date.
- **/
-function create() {
-  console.log("Creating a new file/directory");
-}
-
-/**
  * Handles rendering the search/list TUI.
  * Will render a searchable list of all available files/directories and allows the user to select and delete.
  */
@@ -88,4 +54,5 @@ function searchList(command?: string) {
     console.log("command", command);
   }
 }
+
 main();
