@@ -82,11 +82,39 @@ const createItem = async (state: State) => {
 function render(state: State) {
   clearScreen();
 
-  process.stdout.write("Creating a new file/directory");
+  process.stdout.write("Creating a new file/directory" + "\n");
   process.stdout.write("\n");
 
   process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
   process.stdout.write(style(state.text, [Styles.reset]));
+  process.stdout.write("\n");
+
+  if (state.isFile) {
+    process.stdout.write(
+      style("[○] Directory [●] File", [Styles.bold, Styles.green])
+    );
+    process.stdout.write("\n");
+  } else {
+    process.stdout.write(
+      style("[○] File [●] Directory", [Styles.bold, Styles.green])
+    );
+    process.stdout.write("\n");
+  }
+
+  if (state.prefix) {
+    process.stdout.write(style("[●] Prefix", [Styles.bold, Styles.green]));
+  } else {
+    process.stdout.write(style("[○] No Prefix", [Styles.bold, Styles.red]));
+  }
+
+  const previewText = state.prefix
+    ? `${new Date().toISOString().split("T")[0]}-${state.text}`
+    : state.text;
+
+  process.stdout.write(style("Preview: ", [Styles.bold, Styles.green]));
+  process.stdout.write(
+    style(previewText + (!state.isFile ? "/" : ""), [Styles.reset])
+  );
   process.stdout.write("\n");
 
   process.stdout.write(
@@ -94,5 +122,5 @@ function render(state: State) {
   );
 
   const cursorCol = "Name: ".length + state.text.length + 1;
-  process.stdout.write(`\x1b[2;${cursorCol}H`);
+  process.stdout.write(`\x1b[3;${cursorCol}H`);
 }
