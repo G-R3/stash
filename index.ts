@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 import { parseArgs } from "util";
 import { Commands } from "./types";
-import { showHelpMessage } from "./utils";
+import { getStashDir, showHelpMessage } from "./utils";
 import { createUI } from "./ui/create";
+import { config } from "./config";
 
 async function main() {
   const { values: flags, positionals } = parseArgs({
@@ -26,7 +27,11 @@ async function main() {
         showHelpMessage(command);
         process.exit(0);
       }
-      await createUI();
+      // Moving this here as a temp fix for cli.test.ts creating
+      // a .stash` directory in the root directory.
+      getStashDir(config);
+
+      await createUI(config);
       break;
     default:
       if (flags.help) {

@@ -12,4 +12,8 @@ describe("CLI", () => {
 
     expect(output).toContain("Usage: stash [command] [query]");
   });
+
+  test.skip("Should create stash directory if it doesn't exist", async () => {
+    // TODO: Implement this test
+  });
 });

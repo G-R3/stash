@@ -33,3 +33,7 @@ export const ANSI = {
   arrowRight: "\x1b[C",
   space: " ",
 };
+
+export type Config = {
+  stashDir: string;
+};

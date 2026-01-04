@@ -3,26 +3,30 @@ import { createInitialState, createReducer } from "../ui/create.state";
 import { createItem } from "../ui/create";
 import { existsSync, rmSync, mkdirSync } from "fs";
 import { join } from "path";
+import { Config } from "../types";
 
-const TEST_DIR = join(import.meta.dir, ".test-tmp");
+const MOCK_CONFIG: Config = {
+  stashDir: join(import.meta.dir, ".test-tmp"),
+};
 
 describe("create", () => {
   beforeEach(() => {
-    mkdirSync(TEST_DIR, { recursive: true });
-    process.chdir(TEST_DIR);
+    mkdirSync(MOCK_CONFIG.stashDir, { recursive: true });
+    console.log(MOCK_CONFIG.stashDir);
+    process.chdir(MOCK_CONFIG.stashDir);
   });
 
   afterEach(() => {
-    rmSync(TEST_DIR, { recursive: true, force: true });
+    rmSync(MOCK_CONFIG.stashDir, { recursive: true, force: true });
   });
 
   test("Should create a directory", () => {
     const state = { ...createInitialState(), text: "my-folder", isFile: false };
-    const result = createItem(state);
+    const result = createItem(state, MOCK_CONFIG);
 
     expect(result.success).toBe(true);
     expect(result.message).toBe("Created directory: my-folder");
-    expect(existsSync(join(TEST_DIR, "my-folder"))).toBe(true);
+    expect(existsSync(join(MOCK_CONFIG.stashDir, "my-folder"))).toBe(true);
   });
 
   test("Should update focusedField when TAB is pressed", () => {
@@ -92,11 +96,11 @@ describe("create", () => {
       text: "my-file.txt",
       isFile: true,
     };
-    const result = createItem(state);
+    const result = createItem(state, MOCK_CONFIG);
 
     expect(result.success).toBe(true);
     expect(result.message).toBe("Created file: my-file.txt");
-    expect(existsSync(join(TEST_DIR, "my-file.txt"))).toBe(true);
+    expect(existsSync(join(MOCK_CONFIG.stashDir, "my-file.txt"))).toBe(true);
   });
 
   test("Should create a file with prefix", () => {
@@ -110,10 +114,10 @@ describe("create", () => {
     const currentDate = new Date().toISOString().split("T")[0];
     const expectedName = `${currentDate}-my-file.txt`;
 
-    const result = createItem(state);
+    const result = createItem(state, MOCK_CONFIG);
     expect(result.success).toBe(true);
     expect(result.message).toBe(`Created file: ${expectedName}`);
-    expect(existsSync(join(TEST_DIR, expectedName))).toBe(true);
+    expect(existsSync(join(MOCK_CONFIG.stashDir, expectedName))).toBe(true);
   });
 
   test("Should create a directory with prefix", () => {
@@ -126,17 +130,17 @@ describe("create", () => {
     const currentDate = new Date().toISOString().split("T")[0];
     const expectedName = `${currentDate}-my-folder`;
 
-    const result = createItem(state);
+    const result = createItem(state, MOCK_CONFIG);
     expect(result.success).toBe(true);
     expect(result.message).toBe(`Created directory: ${expectedName}`);
-    expect(existsSync(join(TEST_DIR, expectedName))).toBe(true);
+    expect(existsSync(join(MOCK_CONFIG.stashDir, expectedName))).toBe(true);
   });
 
   test("Should fail if file/directory already exists", () => {
     const state = { ...createInitialState(), text: "existing", isFile: false };
 
-    mkdirSync(join(TEST_DIR, "existing"));
-    const result = createItem(state);
+    mkdirSync(join(MOCK_CONFIG.stashDir, "existing"));
+    const result = createItem(state, MOCK_CONFIG);
 
     expect(result.success).toBe(false);
     expect(result.message).toBe("File/directory already exists: existing");

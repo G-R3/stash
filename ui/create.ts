@@ -1,4 +1,4 @@
-import { State, ANSI } from "../types";
+import { State, ANSI, Config } from "../types";
 import {
   cleanUp,
   clearScreen,
@@ -16,7 +16,7 @@ import { createInitialState, createReducer, keyToAction } from "./create.state";
  * Can chose between creating a file or a directory and if file/directory should
  * be prefixed with the current date.
  **/
-export async function createUI() {
+export async function createUI(config: Config) {
   let state = createInitialState();
 
   clearScreen();
@@ -34,7 +34,7 @@ export async function createUI() {
       clearScreen();
 
       if (action.type === "SUBMIT") {
-        const createResult = createItem(state);
+        const createResult = createItem(state, config);
 
         writeLine(
           style(createResult.message, [
@@ -60,9 +60,9 @@ export async function createUI() {
   render(state);
 }
 
-export const createItem = (state: State) => {
+export const createItem = (state: State, config: Config) => {
   const name = state.prefix ? `${currentDate}-${state.text}` : state.text;
-  const fullPath = join(process.cwd(), name);
+  const fullPath = join(config.stashDir, name);
 
   if (existsSync(fullPath)) {
     return {

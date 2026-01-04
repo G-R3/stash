@@ -16,3 +16,5 @@ dist/
 
 # My personal todos
 todos.txt
+
+.stash/

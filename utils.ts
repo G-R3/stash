@@ -1,4 +1,5 @@
-import { Commands, ANSI } from "./types";
+import { existsSync, mkdirSync } from "fs";
+import { Commands, ANSI, Config } from "./types";
 
 export function style(text: string, styles: string[]): string {
   if (styles.length === 0) {
@@ -64,3 +65,14 @@ export function write(text: string): void {
 }
 
 export const currentDate = new Date().toISOString().split("T")[0];
+
+export function getStashDir(config: Config) {
+  if (!existsSync(config.stashDir)) {
+    console.log(
+      `Stash directory ${config.stashDir} does not exist, creating...`
+    );
+    mkdirSync(config.stashDir, { recursive: true });
+  }
+
+  return config.stashDir;
+}
