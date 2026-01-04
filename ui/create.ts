@@ -1,4 +1,4 @@
-import { State, Styles } from "../types";
+import { State, ANSI } from "../types";
 import { cleanUp, clearScreen, style } from "../utils";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
@@ -35,8 +35,7 @@ export async function createUI() {
       clearScreen();
 
       process.stdout.write(
-        style(result.message, [result.success ? Styles.green : Styles.red]) +
-          "\n"
+        style(result.message, [result.success ? ANSI.green : ANSI.red]) + "\n"
       );
       process.exit(result.success ? 0 : 1);
     } else {
@@ -85,40 +84,40 @@ function render(state: State) {
   process.stdout.write("Creating a new file/directory" + "\n");
   process.stdout.write("\n");
 
-  process.stdout.write(style("Name: ", [Styles.bold, Styles.green]));
-  process.stdout.write(style(state.text, [Styles.reset]));
+  process.stdout.write(style("Name: ", [ANSI.bold, ANSI.green]));
+  process.stdout.write(style(state.text, [ANSI.reset]));
   process.stdout.write("\n");
 
   if (state.isFile) {
     process.stdout.write(
-      style("[○] Directory [●] File", [Styles.bold, Styles.green])
+      style("[○] Directory [●] File", [ANSI.bold, ANSI.green])
     );
     process.stdout.write("\n");
   } else {
     process.stdout.write(
-      style("[○] File [●] Directory", [Styles.bold, Styles.green])
+      style("[○] File [●] Directory", [ANSI.bold, ANSI.green])
     );
     process.stdout.write("\n");
   }
 
   if (state.prefix) {
-    process.stdout.write(style("[●] Prefix", [Styles.bold, Styles.green]));
+    process.stdout.write(style("[●] Prefix", [ANSI.bold, ANSI.green]));
   } else {
-    process.stdout.write(style("[○] No Prefix", [Styles.bold, Styles.red]));
+    process.stdout.write(style("[○] No Prefix", [ANSI.bold, ANSI.red]));
   }
 
   const previewText = state.prefix
     ? `${new Date().toISOString().split("T")[0]}-${state.text}`
     : state.text;
 
-  process.stdout.write(style("Preview: ", [Styles.bold, Styles.green]));
+  process.stdout.write(style("Preview: ", [ANSI.bold, ANSI.green]));
   process.stdout.write(
-    style(previewText + (!state.isFile ? "/" : ""), [Styles.reset])
+    style(previewText + (!state.isFile ? "/" : ""), [ANSI.reset])
   );
   process.stdout.write("\n");
 
   process.stdout.write(
-    style("\n" + "Enter to create | Escape to cancel", [Styles.dim])
+    style("\n" + "Enter to create | Escape to cancel", [ANSI.dim])
   );
 
   const cursorCol = "Name: ".length + state.text.length + 1;

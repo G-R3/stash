@@ -1,15 +1,15 @@
-import { Commands, Styles } from "./types";
+import { Commands, ANSI } from "./types";
 
 export function style(text: string, styles: string[]): string {
   if (styles.length === 0) {
     return text;
   }
-  return `${styles.join("")}${text}${Styles.reset}`;
+  return `${styles.join("")}${text}${ANSI.reset}`;
 }
 
 export function clearScreen() {
-  process.stdout.write(Styles.clearScreen);
-  process.stdout.write(Styles.cursorHome);
+  process.stdout.write(ANSI.clearScreen);
+  process.stdout.write(ANSI.cursorHome);
 }
 
 export function cleanUp() {

@@ -10,7 +10,7 @@ export type State = {
   cursorPosition: number;
 };
 
-export const Styles = {
+export const ANSI = {
   bold: "\x1b[1m",
   green: "\x1b[32m",
   red: "\x1b[31m",
