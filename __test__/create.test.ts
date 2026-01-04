@@ -66,7 +66,7 @@ describe("create", () => {
     const state = createInitialState();
     const result = createReducer(state, { type: "SPACE" });
     expect(result.done).toBe(false);
-    expect(result.state.prefix).toBe(true);
+    expect(result.state.prefix).toBe(false);
     expect(result.state.focusedField).not.toBe(2);
 
     const result2 = createReducer(state, { type: "TAB" });
@@ -79,7 +79,11 @@ describe("create", () => {
 
     const result4 = createReducer(result3.state, { type: "SPACE" });
     expect(result4.done).toBe(false);
-    expect(result4.state.prefix).toBe(false);
+    expect(result4.state.prefix).toBe(true);
+
+    const result5 = createReducer(result4.state, { type: "SPACE" });
+    expect(result5.done).toBe(false);
+    expect(result5.state.prefix).toBe(false);
   });
 
   test("Should create a file", () => {
@@ -93,6 +97,39 @@ describe("create", () => {
     expect(result.success).toBe(true);
     expect(result.message).toBe("Created file: my-file.txt");
     expect(existsSync(join(TEST_DIR, "my-file.txt"))).toBe(true);
+  });
+
+  test("Should create a file with prefix", () => {
+    const state = {
+      ...createInitialState(),
+      text: "my-file.txt",
+      isFile: true,
+      prefix: true,
+    };
+
+    const currentDate = new Date().toISOString().split("T")[0];
+    const expectedName = `${currentDate}-my-file.txt`;
+
+    const result = createItem(state);
+    expect(result.success).toBe(true);
+    expect(result.message).toBe(`Created file: ${expectedName}`);
+    expect(existsSync(join(TEST_DIR, expectedName))).toBe(true);
+  });
+
+  test("Should create a directory with prefix", () => {
+    const state = {
+      ...createInitialState(),
+      text: "my-folder",
+      isFile: false,
+      prefix: true,
+    };
+    const currentDate = new Date().toISOString().split("T")[0];
+    const expectedName = `${currentDate}-my-folder`;
+
+    const result = createItem(state);
+    expect(result.success).toBe(true);
+    expect(result.message).toBe(`Created directory: ${expectedName}`);
+    expect(existsSync(join(TEST_DIR, expectedName))).toBe(true);
   });
 
   test("Should fail if file/directory already exists", () => {

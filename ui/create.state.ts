@@ -4,7 +4,7 @@ export const createInitialState = (): State => ({
   text: "",
   focusedField: 0,
   isFile: false,
-  prefix: true,
+  prefix: false,
   cursorPosition: 0,
 });
 
