@@ -10,6 +10,7 @@ export function style(text: string, styles: string[]): string {
 export function clearScreen(): void {
   process.stdout.write(ANSI.clearScreen);
   process.stdout.write(ANSI.cursorHome);
+  process.stdout.write(ANSI.cursorShow);
 }
 
 export function cleanUp(): void {
