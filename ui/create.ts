@@ -1,7 +1,8 @@
 import { State, ANSI } from "../types";
 import { cleanUp, clearScreen, style, write, writeLine } from "../utils";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
+import { createInitialState, createReducer, keyToAction } from "./create.state";
 
 /**
  * Handles rendering the create TUI.
@@ -9,75 +10,40 @@ import { join } from "path";
  * be prefixed with the current date.
  **/
 export async function createUI() {
-  const state: State = {
-    text: "",
-    focusedField: 0,
-    isFile: false,
-    prefix: true,
-    cursorPosition: 0,
-  };
+  let state = createInitialState();
 
   clearScreen();
 
-  const handleKeyPress = async (key: string) => {
-    // Escape key
-    if (key === ANSI.escape) {
-      cleanUp();
-      clearScreen();
-      process.exit(0);
-    }
-
-    if (key === ANSI.tab) {
-      state.focusedField = (state.focusedField + 1) % 3;
-      render(state);
-      return;
-    }
-
-    if (state.focusedField === 1) {
-      if (state.isFile && (key === ANSI.arrowLeft || key === ANSI.arrowRight)) {
-        state.isFile = !state.isFile;
-        render(state);
-        return;
-      }
-
-      if (
-        !state.isFile &&
-        (key === ANSI.arrowRight || key === ANSI.arrowLeft)
-      ) {
-        state.isFile = !state.isFile;
-        render(state);
-        return;
-      }
-    }
-
-    if (state.focusedField === 2) {
-      if (key === ANSI.space) {
-        state.prefix = !state.prefix;
-        render(state);
-        return;
-      }
-    }
-
-    // Enter key
-    if (key === ANSI.enter) {
-      const result = await createItem(state);
-
-      cleanUp();
-      clearScreen();
-
-      process.stdout.write(
-        style(result.message, [result.success ? ANSI.green : ANSI.red]) + "\n"
-      );
-      process.exit(result.success ? 0 : 1);
-    } else {
-      state.text += key;
-      render(state);
-    }
-  };
-
   process.stdin.on("data", (data) => {
     const key = data.toString();
-    handleKeyPress(key);
+    const action = keyToAction(key);
+
+    if (!action) return;
+
+    const result = createReducer(state, action);
+
+    if (result.done) {
+      cleanUp();
+      clearScreen();
+
+      if (action.type === "SUBMIT") {
+        const createResult = createItem(state);
+
+        writeLine(
+          style(createResult.message, [
+            createResult.success ? ANSI.green : ANSI.red,
+          ])
+        );
+
+        process.exit(createResult.success ? 0 : 1);
+      } else {
+        process.exit(0);
+      }
+    }
+
+    state = result.state;
+    const error = "error" in result ? result.error : undefined;
+    render(state, error);
   });
 
   // without this, we would only get streams once enter is pressed
@@ -87,13 +53,19 @@ export async function createUI() {
   render(state);
 }
 
-const createItem = async (state: State) => {
+const createItem = (state: State) => {
+  // TODO: ensure item name is prefixed with Date if prefix is true
   const fullPath = join(process.cwd(), state.text);
 
   if (existsSync(fullPath)) {
     return {
       success: false,
-      message: "File/directory already exists",
+      message: `File/directory already exists: ${state.text}`,
+      data: {
+        name: state.text,
+        type: state.isFile ? "file" : "directory",
+        path: fullPath,
+      },
     };
   }
 
@@ -103,13 +75,23 @@ const createItem = async (state: State) => {
     mkdirSync(fullPath, { recursive: true });
   }
 
+  // get file metadata
+  const fileStats = statSync(fullPath);
+
   return {
     success: true,
-    message: "File/directory created successfully",
+    message: `Created ${state.isFile ? "file" : "directory"}: ${state.text}`,
+    data: {
+      name: state.text,
+      type: state.isFile ? "file" : "directory",
+      path: fullPath,
+      mtime: fileStats.mtime,
+      size: fileStats.size,
+    },
   };
 };
 
-function render(state: State) {
+function render(state: State, error?: string) {
   clearScreen();
 
   writeLine("Creating a new file/directory");
@@ -158,6 +140,12 @@ function render(state: State) {
   writeLine(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
 
   writeLine();
+
+  if (error) {
+    writeLine(style(error, [ANSI.red]));
+    writeLine();
+  }
+
   writeLine(
     style("Enter to create | Escape to cancel | Tab to focus next field", [
       ANSI.dim,
