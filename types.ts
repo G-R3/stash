@@ -31,4 +31,5 @@ export const ANSI = {
   arrowUp: "\x1b[A",
   arrowLeft: "\x1b[D",
   arrowRight: "\x1b[C",
+  space: " ",
 };

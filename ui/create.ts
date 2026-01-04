@@ -33,6 +33,31 @@ export async function createUI() {
       return;
     }
 
+    if (state.focusedField === 1) {
+      if (state.isFile && (key === ANSI.arrowLeft || key === ANSI.arrowRight)) {
+        state.isFile = !state.isFile;
+        render(state);
+        return;
+      }
+
+      if (
+        !state.isFile &&
+        (key === ANSI.arrowRight || key === ANSI.arrowLeft)
+      ) {
+        state.isFile = !state.isFile;
+        render(state);
+        return;
+      }
+    }
+
+    if (state.focusedField === 2) {
+      if (key === ANSI.space) {
+        state.prefix = !state.prefix;
+        render(state);
+        return;
+      }
+    }
+
     // Enter key
     if (key === ANSI.enter) {
       const result = await createItem(state);
@@ -105,7 +130,7 @@ function render(state: State) {
   writeLine();
 
   write(
-    style(state.isFile ? "[○] Directory [●] File" : "[○] File [●] Directory", [
+    style(state.isFile ? "[○] Directory [●] File" : "[●] Directory [○] File", [
       ANSI.bold,
       state.focusedField === 1 ? ANSI.green : ANSI.dim,
     ])
@@ -122,9 +147,12 @@ function render(state: State) {
 
   writeLine();
 
-  const previewText = state.prefix
-    ? `${new Date().toISOString().split("T")[0]}-${state.text}`
-    : state.text;
+  let previewText = "...";
+  if (state.text.trim() !== "") {
+    previewText = state.prefix
+      ? `${new Date().toISOString().split("T")[0]}-${state.text}`
+      : state.text;
+  }
 
   write(style("Preview: ", [ANSI.bold, ANSI.green]));
   writeLine(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
