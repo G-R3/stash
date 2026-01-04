@@ -19,9 +19,7 @@ export type StateActions =
   | { type: "ARROW_RIGHT" }
   | { type: "SPACE" };
 
-export type ReducerResult =
-  | { done: boolean; state: State }
-  | { done: boolean; state: State; error: string };
+export type ReducerResult = { done: boolean; state: State; error?: string };
 
 export const createReducer = (
   state: State,

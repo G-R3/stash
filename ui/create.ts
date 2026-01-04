@@ -53,7 +53,7 @@ export async function createUI() {
   render(state);
 }
 
-const createItem = (state: State) => {
+export const createItem = (state: State) => {
   // TODO: ensure item name is prefixed with Date if prefix is true
   const fullPath = join(process.cwd(), state.text);
 
