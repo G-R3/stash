@@ -111,19 +111,25 @@ function render(state: State, error?: string) {
   writeLine();
 
   write(
-    style(state.isFile ? "[○] Directory [●] File" : "[●] Directory [○] File", [
-      ANSI.bold,
-      state.focusedField === 1 ? ANSI.green : ANSI.dim,
-    ])
+    state.isFile
+      ? style("[ ] Directory ", [ANSI.dim]) +
+          style(
+            "[●] File",
+            state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
+          )
+      : style(
+          "[●] Directory ",
+          state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
+        ) + style("[ ] File", [ANSI.dim])
   );
 
   writeLine();
 
   writeLine(
-    style(state.prefix ? "[●] Prefix" : "[○] No Prefix", [
-      ANSI.bold,
-      state.focusedField === 2 ? ANSI.green : ANSI.dim,
-    ])
+    style(
+      state.prefix ? "[●] Prefix" : "[ ] Prefix",
+      state.focusedField === 2 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
+    )
   );
 
   writeLine();
