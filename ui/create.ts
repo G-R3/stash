@@ -90,24 +90,35 @@ function render(state: State) {
   writeLine("Creating a new file/directory");
   writeLine();
 
-  write(style("Name: ", [ANSI.bold, ANSI.green]));
-  writeLine(style(state.text, [ANSI.reset]));
+  write(
+    style("Name: ", [
+      ANSI.bold,
+      state.focusedField === 0 ? ANSI.green : ANSI.dim,
+    ])
+  );
+  writeLine(
+    style(state.text || (state.focusedField !== 0 ? "(empty)" : ""), [
+      state.focusedField === 0 ? ANSI.reset : ANSI.dim,
+    ])
+  );
 
   writeLine();
 
-  if (state.isFile) {
-    write(style("[○] Directory [●] File", [ANSI.bold, ANSI.green]));
-  } else {
-    write(style("[○] File [●] Directory", [ANSI.bold, ANSI.green]));
-  }
+  write(
+    style(state.isFile ? "[○] Directory [●] File" : "[○] File [●] Directory", [
+      ANSI.bold,
+      state.focusedField === 1 ? ANSI.green : ANSI.dim,
+    ])
+  );
 
   writeLine();
 
-  if (state.prefix) {
-    writeLine(style("[●] Prefix", [ANSI.bold, ANSI.green]));
-  } else {
-    writeLine(style("[○] No Prefix", [ANSI.bold, ANSI.red]));
-  }
+  writeLine(
+    style(state.prefix ? "[●] Prefix" : "[○] No Prefix", [
+      ANSI.bold,
+      state.focusedField === 2 ? ANSI.green : ANSI.dim,
+    ])
+  );
 
   writeLine();
 
@@ -116,11 +127,21 @@ function render(state: State) {
     : state.text;
 
   write(style("Preview: ", [ANSI.bold, ANSI.green]));
-  write(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
-  writeLine();
+  writeLine(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
 
-  writeLine(style("Enter to create | Escape to cancel", [ANSI.dim]));
+  writeLine();
+  writeLine(
+    style("Enter to create | Escape to cancel | Tab to focus next field", [
+      ANSI.dim,
+    ])
+  );
 
   const cursorCol = "Name: ".length + state.text.length + 1;
-  write(`\x1b[3;${cursorCol}H`); // sets the cursor position to the end of the name field label.
+
+  if (state.focusedField === 0) {
+    write(ANSI.cursorShow);
+    write(`\x1b[3;${cursorCol}H`); // sets the cursor position to the end of the name field label.
+  } else {
+    write(ANSI.cursorHide);
+  }
 }
