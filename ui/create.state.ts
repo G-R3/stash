@@ -17,6 +17,8 @@ export type StateActions =
   | { type: "CANCEL" }
   | { type: "ARROW_LEFT" }
   | { type: "ARROW_RIGHT" }
+  | { type: "ARROW_UP" }
+  | { type: "ARROW_DOWN" }
   | { type: "SPACE" };
 
 export type ReducerResult = { done: boolean; state: State; error?: string };
@@ -50,6 +52,9 @@ export const createReducer = (
       };
     }
     case "ARROW_LEFT": {
+      if (state.focusedField === 0) {
+        // TODO: move cursor left on name field
+      }
       if (state.focusedField === 1) {
         return {
           done: false,
@@ -59,8 +64,16 @@ export const createReducer = (
           },
         };
       }
+
+      return {
+        done: false,
+        state,
+      };
     }
     case "ARROW_RIGHT": {
+      if (state.focusedField === 0) {
+        // TODO: move cursor right on name field
+      }
       if (state.focusedField === 1) {
         return {
           done: false,
@@ -70,6 +83,29 @@ export const createReducer = (
           },
         };
       }
+
+      return {
+        done: false,
+        state,
+      };
+    }
+    case "ARROW_UP": {
+      return {
+        done: false,
+        state: {
+          ...state,
+          focusedField: (state.focusedField - 1 + 3) % 3,
+        },
+      };
+    }
+    case "ARROW_DOWN": {
+      return {
+        done: false,
+        state: {
+          ...state,
+          focusedField: (state.focusedField + 1) % 3,
+        },
+      };
     }
     case "SPACE": {
       if (state.focusedField === 0) {
@@ -128,6 +164,10 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "ARROW_LEFT" };
     case ANSI.arrowRight:
       return { type: "ARROW_RIGHT" };
+    case ANSI.arrowUp:
+      return { type: "ARROW_UP" };
+    case ANSI.arrowDown:
+      return { type: "ARROW_DOWN" };
     case ANSI.space:
       return { type: "SPACE" };
   }
