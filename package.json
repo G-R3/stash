@@ -5,6 +5,10 @@
   "bin": {
     "stash": "./index.ts"
   },
+  "scripts": {
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
   "devDependencies": {
     "bun-types": "latest"
   },
