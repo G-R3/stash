@@ -62,3 +62,5 @@ export function writeLine(text: string = ""): void {
 export function write(text: string): void {
   process.stdout.write(text);
 }
+
+export const currentDate = new Date().toISOString().split("T")[0];

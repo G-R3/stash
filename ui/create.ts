@@ -1,5 +1,12 @@
 import { State, ANSI } from "../types";
-import { cleanUp, clearScreen, style, write, writeLine } from "../utils";
+import {
+  cleanUp,
+  clearScreen,
+  currentDate,
+  style,
+  write,
+  writeLine,
+} from "../utils";
 import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
 import { createInitialState, createReducer, keyToAction } from "./create.state";
@@ -54,15 +61,15 @@ export async function createUI() {
 }
 
 export const createItem = (state: State) => {
-  // TODO: ensure item name is prefixed with Date if prefix is true
-  const fullPath = join(process.cwd(), state.text);
+  const name = state.prefix ? `${currentDate}-${state.text}` : state.text;
+  const fullPath = join(process.cwd(), name);
 
   if (existsSync(fullPath)) {
     return {
       success: false,
-      message: `File/directory already exists: ${state.text}`,
+      message: `File/directory already exists: ${name}`,
       data: {
-        name: state.text,
+        name,
         type: state.isFile ? "file" : "directory",
         path: fullPath,
       },
@@ -79,9 +86,9 @@ export const createItem = (state: State) => {
 
   return {
     success: true,
-    message: `Created ${state.isFile ? "file" : "directory"}: ${state.text}`,
+    message: `Created ${state.isFile ? "file" : "directory"}: ${name}`,
     data: {
-      name: state.text,
+      name,
       type: state.isFile ? "file" : "directory",
       path: fullPath,
       mtime: fileStats.mtime,
@@ -93,7 +100,7 @@ export const createItem = (state: State) => {
 function render(state: State, error?: string) {
   clearScreen();
 
-  writeLine("Creating a new file/directory");
+  writeLine("Create a new file/directory");
   writeLine();
 
   write(
@@ -136,9 +143,7 @@ function render(state: State, error?: string) {
 
   let previewText = "...";
   if (state.text.trim() !== "") {
-    previewText = state.prefix
-      ? `${new Date().toISOString().split("T")[0]}-${state.text}`
-      : state.text;
+    previewText = state.prefix ? `${currentDate}-${state.text}` : state.text;
   }
 
   write(style("Preview: ", [ANSI.bold, ANSI.green]));
@@ -152,9 +157,10 @@ function render(state: State, error?: string) {
   }
 
   writeLine(
-    style("Enter to create | Escape to cancel | Tab to focus next field", [
-      ANSI.dim,
-    ])
+    style(
+      "Enter to create | Escape to cancel | Tab to focus next field | Space to toggle fields",
+      [ANSI.dim]
+    )
   );
 
   const cursorCol = "Name: ".length + state.text.length + 1;
