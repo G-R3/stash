@@ -22,4 +22,13 @@ export const ANSI = {
   cursorHide: "\x1b[?25l",
   cursorShow: "\x1b[?25h",
   clearScreen: "\x1b[2J",
+
+  // keys
+  escape: "\x1b",
+  enter: "\r",
+  tab: "\t",
+  arrowDown: "\x1b[B",
+  arrowUp: "\x1b[A",
+  arrowLeft: "\x1b[D",
+  arrowRight: "\x1b[C",
 };

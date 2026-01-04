@@ -1,5 +1,5 @@
 import { State, ANSI } from "../types";
-import { cleanUp, clearScreen, style } from "../utils";
+import { cleanUp, clearScreen, style, write, writeLine } from "../utils";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
@@ -21,14 +21,20 @@ export async function createUI() {
 
   const handleKeyPress = async (key: string) => {
     // Escape key
-    if (key === "\x1b") {
+    if (key === ANSI.escape) {
       cleanUp();
       clearScreen();
       process.exit(0);
     }
 
+    if (key === ANSI.tab) {
+      state.focusedField = (state.focusedField + 1) % 3;
+      render(state);
+      return;
+    }
+
     // Enter key
-    if (key === "\r") {
+    if (key === ANSI.enter) {
       const result = await createItem(state);
 
       cleanUp();
@@ -81,45 +87,40 @@ const createItem = async (state: State) => {
 function render(state: State) {
   clearScreen();
 
-  process.stdout.write("Creating a new file/directory" + "\n");
-  process.stdout.write("\n");
+  writeLine("Creating a new file/directory");
+  writeLine();
 
-  process.stdout.write(style("Name: ", [ANSI.bold, ANSI.green]));
-  process.stdout.write(style(state.text, [ANSI.reset]));
-  process.stdout.write("\n");
+  write(style("Name: ", [ANSI.bold, ANSI.green]));
+  writeLine(style(state.text, [ANSI.reset]));
+
+  writeLine();
 
   if (state.isFile) {
-    process.stdout.write(
-      style("[○] Directory [●] File", [ANSI.bold, ANSI.green])
-    );
-    process.stdout.write("\n");
+    write(style("[○] Directory [●] File", [ANSI.bold, ANSI.green]));
   } else {
-    process.stdout.write(
-      style("[○] File [●] Directory", [ANSI.bold, ANSI.green])
-    );
-    process.stdout.write("\n");
+    write(style("[○] File [●] Directory", [ANSI.bold, ANSI.green]));
   }
 
+  writeLine();
+
   if (state.prefix) {
-    process.stdout.write(style("[●] Prefix", [ANSI.bold, ANSI.green]));
+    writeLine(style("[●] Prefix", [ANSI.bold, ANSI.green]));
   } else {
-    process.stdout.write(style("[○] No Prefix", [ANSI.bold, ANSI.red]));
+    writeLine(style("[○] No Prefix", [ANSI.bold, ANSI.red]));
   }
+
+  writeLine();
 
   const previewText = state.prefix
     ? `${new Date().toISOString().split("T")[0]}-${state.text}`
     : state.text;
 
-  process.stdout.write(style("Preview: ", [ANSI.bold, ANSI.green]));
-  process.stdout.write(
-    style(previewText + (!state.isFile ? "/" : ""), [ANSI.reset])
-  );
-  process.stdout.write("\n");
+  write(style("Preview: ", [ANSI.bold, ANSI.green]));
+  write(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
+  writeLine();
 
-  process.stdout.write(
-    style("\n" + "Enter to create | Escape to cancel", [ANSI.dim])
-  );
+  writeLine(style("Enter to create | Escape to cancel", [ANSI.dim]));
 
   const cursorCol = "Name: ".length + state.text.length + 1;
-  process.stdout.write(`\x1b[3;${cursorCol}H`);
+  write(`\x1b[3;${cursorCol}H`); // sets the cursor position to the end of the name field label.
 }

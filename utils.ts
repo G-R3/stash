@@ -7,18 +7,18 @@ export function style(text: string, styles: string[]): string {
   return `${styles.join("")}${text}${ANSI.reset}`;
 }
 
-export function clearScreen() {
+export function clearScreen(): void {
   process.stdout.write(ANSI.clearScreen);
   process.stdout.write(ANSI.cursorHome);
 }
 
-export function cleanUp() {
+export function cleanUp(): void {
   process.stdin.setRawMode(false);
   process.stdin.removeAllListeners("data");
   process.stdin.pause();
 }
 
-export function showHelpMessage(command: string) {
+export function showHelpMessage(command: string): void {
   switch (command) {
     case Commands.CREATE:
       console.log(`
@@ -52,4 +52,12 @@ export function showHelpMessage(command: string) {
             `);
       break;
   }
+}
+
+export function writeLine(text: string = ""): void {
+  process.stdout.write(text + "\n");
+}
+
+export function write(text: string): void {
+  process.stdout.write(text);
 }
