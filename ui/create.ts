@@ -75,7 +75,6 @@ const createItem = (state: State) => {
     mkdirSync(fullPath, { recursive: true });
   }
 
-  // get file metadata
   const fileStats = statSync(fullPath);
 
   return {
