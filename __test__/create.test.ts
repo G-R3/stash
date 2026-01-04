@@ -12,8 +12,6 @@ const MOCK_CONFIG: Config = {
 describe("create", () => {
   beforeEach(() => {
     mkdirSync(MOCK_CONFIG.stashDir, { recursive: true });
-    console.log(MOCK_CONFIG.stashDir);
-    process.chdir(MOCK_CONFIG.stashDir);
   });
 
   afterEach(() => {
