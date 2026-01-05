@@ -67,7 +67,10 @@ export const createReducer = (
         done: false,
         state: {
           ...state,
-          text: state.text + action.char,
+          text:
+            state.text.slice(0, state.cursorPosition) +
+            action.char +
+            state.text.slice(state.cursorPosition),
           cursorPosition: state.cursorPosition + 1,
         },
       };
@@ -217,7 +220,10 @@ export const createReducer = (
           done: false,
           state: {
             ...state,
-            text: state.text + " ",
+            text:
+              state.text.slice(0, state.cursorPosition) +
+              " " +
+              state.text.slice(state.cursorPosition),
             cursorPosition: state.cursorPosition + 1,
           },
         };

@@ -156,6 +156,54 @@ describe("create", () => {
     expect(result.error).toBe("Name cannot be empty");
   });
 
+  test("INPUT_CHAR should insert character at cursor position, not append to end", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hllo",
+      cursorPosition: 1, // cursor after "h"
+    };
+    const result = createReducer(state, { type: "INPUT_CHAR", char: "e" });
+
+    expect(result.state.text).toBe("hello");
+    expect(result.state.cursorPosition).toBe(2);
+  });
+
+  test("INPUT_CHAR should insert at beginning when cursor is at position 0", () => {
+    const state = {
+      ...createInitialState(),
+      text: "ello",
+      cursorPosition: 0,
+    };
+    const result = createReducer(state, { type: "INPUT_CHAR", char: "h" });
+
+    expect(result.state.text).toBe("hello");
+    expect(result.state.cursorPosition).toBe(1);
+  });
+
+  test("SPACE should insert space at cursor position, not append to end", () => {
+    const state = {
+      ...createInitialState(),
+      text: "helloworld",
+      cursorPosition: 5, // cursor after "hello"
+    };
+    const result = createReducer(state, { type: "SPACE" });
+
+    expect(result.state.text).toBe("hello world");
+    expect(result.state.cursorPosition).toBe(6);
+  });
+
+  test("SPACE should insert at beginning when cursor is at position 0", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello",
+      cursorPosition: 0,
+    };
+    const result = createReducer(state, { type: "SPACE" });
+
+    expect(result.state.text).toBe(" hello");
+    expect(result.state.cursorPosition).toBe(1);
+  });
+
   test("HOME should move cursor to beginning of text", () => {
     const state = {
       ...createInitialState(),
