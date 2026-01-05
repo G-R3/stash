@@ -102,7 +102,7 @@ function render(state: State, error?: string) {
   clearScreen();
   const { cols } = getTerminalSize();
 
-  writeLine("Create a new file/directory");
+  writeLine(style("Create stash item", [ANSI.cyan, ANSI.bold]));
   writeLine(style("─".repeat(Math.min(cols - 4, 40)), [ANSI.dim]));
   writeLine();
 
@@ -149,8 +149,8 @@ function render(state: State, error?: string) {
     previewText = state.prefix ? `${currentDate}-${state.text}` : state.text;
   }
 
-  write(style("Preview: ", [ANSI.bold, ANSI.green]));
-  writeLine(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.reset]));
+  write("Preview: ");
+  writeLine(style(`${previewText}${!state.isFile ? "/" : ""}`, [ANSI.bold]));
 
   writeLine();
 

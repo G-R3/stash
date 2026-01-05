@@ -14,6 +14,7 @@ export const ANSI = {
   bold: "\x1b[1m",
   green: "\x1b[32m",
   red: "\x1b[31m",
+  cyan: "\x1b[36m",
   reset: "\x1b[0m",
   dim: "\x1b[2m",
   inverse: "\x1b[7m",
