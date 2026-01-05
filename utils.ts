@@ -76,3 +76,10 @@ export function getStashDir(config: Config) {
 
   return config.stashDir;
 }
+
+export function getTerminalSize() {
+  return {
+    rows: process.stdout.rows || process.stderr.rows || 24,
+    cols: process.stdout.columns || process.stderr.columns || 80,
+  };
+}

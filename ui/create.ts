@@ -3,6 +3,7 @@ import {
   cleanUp,
   clearScreen,
   currentDate,
+  getTerminalSize,
   style,
   write,
   writeLine,
@@ -99,8 +100,10 @@ export const createItem = (state: State, config: Config) => {
 
 function render(state: State, error?: string) {
   clearScreen();
+  const { cols } = getTerminalSize();
 
   writeLine("Create a new file/directory");
+  writeLine(style("─".repeat(Math.min(cols - 4, 40)), [ANSI.dim]));
   writeLine();
 
   write(
@@ -158,7 +161,7 @@ function render(state: State, error?: string) {
 
   writeLine(
     style(
-      "Enter to create | Escape to cancel | Tab to focus next field | Space to toggle fields",
+      "⏎ create | esc cancel | tab to focus field | space to toggle fields",
       [ANSI.dim]
     )
   );
@@ -167,7 +170,7 @@ function render(state: State, error?: string) {
 
   if (state.focusedField === 0) {
     write(ANSI.cursorShow);
-    write(`\x1b[3;${cursorCol + state.cursorPosition}H`); // sets the cursor position to the end of the name field label.
+    write(`\x1b[4;${cursorCol + state.cursorPosition}H`); // sets the cursor position to the end of the name field label.
   } else {
     write(ANSI.cursorHide);
   }
