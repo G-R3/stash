@@ -1,9 +1,13 @@
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import { createInitialState, createReducer } from "../ui/create.state";
+import {
+  createInitialState,
+  createReducer,
+  keyToAction,
+} from "../ui/create.state";
 import { createItem } from "../ui/create";
 import { existsSync, rmSync, mkdirSync } from "fs";
 import { join } from "path";
-import { Config } from "../types";
+import { ANSI, Config } from "../types";
 
 const MOCK_CONFIG: Config = {
   stashDir: join(import.meta.dir, ".test-tmp"),
@@ -150,5 +154,152 @@ describe("create", () => {
 
     expect(result.done).toBe(false);
     expect(result.error).toBe("Name cannot be empty");
+  });
+
+  test("HOME should move cursor to beginning of text", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 6,
+    };
+    const result = createReducer(state, { type: "HOME" });
+
+    expect(result.state.cursorPosition).toBe(0);
+  });
+
+  test("HOME should do nothing when not focused on text field", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello",
+      cursorPosition: 3,
+      focusedField: 1,
+    };
+    const result = createReducer(state, { type: "HOME" });
+
+    expect(result.state.cursorPosition).toBe(3);
+  });
+
+  test("END should move cursor to end of text", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 0,
+    };
+    const result = createReducer(state, { type: "END" });
+
+    expect(result.state.cursorPosition).toBe(11);
+  });
+
+  test("END should do nothing when not focused on text field", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello",
+      cursorPosition: 0,
+      focusedField: 2,
+    };
+    const result = createReducer(state, { type: "END" });
+
+    expect(result.state.cursorPosition).toBe(0);
+  });
+
+  test("WORD_LEFT should move cursor to previous word boundary", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world test",
+      cursorPosition: 16, // at end
+    };
+
+    const result1 = createReducer(state, { type: "WORD_LEFT" });
+    expect(result1.state.cursorPosition).toBe(12); // start of "test"
+
+    const result2 = createReducer(result1.state, { type: "WORD_LEFT" });
+    expect(result2.state.cursorPosition).toBe(6); // start of "world"
+
+    const result3 = createReducer(result2.state, { type: "WORD_LEFT" });
+    expect(result3.state.cursorPosition).toBe(0); // start of "hello"
+  });
+
+  test("WORD_LEFT should handle cursor in middle of word", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 8, // middle of "world"
+    };
+    const result = createReducer(state, { type: "WORD_LEFT" });
+
+    expect(result.state.cursorPosition).toBe(6); // start of "world"
+  });
+
+  test("WORD_RIGHT should move cursor to next word boundary", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world test",
+      cursorPosition: 0,
+    };
+
+    const result1 = createReducer(state, { type: "WORD_RIGHT" });
+    expect(result1.state.cursorPosition).toBe(6); // start of "world"
+
+    const result2 = createReducer(result1.state, { type: "WORD_RIGHT" });
+    expect(result2.state.cursorPosition).toBe(12); // start of "test"
+
+    const result3 = createReducer(result2.state, { type: "WORD_RIGHT" });
+    expect(result3.state.cursorPosition).toBe(16); // end of text
+  });
+
+  test("WORD_RIGHT should handle cursor in middle of word", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 2, // middle of "hello"
+    };
+    const result = createReducer(state, { type: "WORD_RIGHT" });
+
+    expect(result.state.cursorPosition).toBe(6); // start of "world"
+  });
+
+  test("WORD_LEFT and WORD_RIGHT should do nothing when not focused on text field", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 5,
+      focusedField: 1,
+    };
+
+    const resultLeft = createReducer(state, { type: "WORD_LEFT" });
+    expect(resultLeft.state.cursorPosition).toBe(5);
+
+    const resultRight = createReducer(state, { type: "WORD_RIGHT" });
+    expect(resultRight.state.cursorPosition).toBe(5);
+  });
+});
+
+describe("keyToAction navigation mappings", () => {
+  test("HOME keys should map to HOME action", () => {
+    expect(keyToAction(ANSI.home)).toEqual({ type: "HOME" });
+    expect(keyToAction(ANSI.homeAlt)).toEqual({ type: "HOME" });
+    expect(keyToAction(ANSI.home2)).toEqual({ type: "HOME" });
+    expect(keyToAction(ANSI.cmdLeft)).toEqual({ type: "HOME" });
+    expect(keyToAction(ANSI.ctrlA)).toEqual({ type: "HOME" });
+  });
+
+  test("END keys should map to END action", () => {
+    expect(keyToAction(ANSI.end)).toEqual({ type: "END" });
+    expect(keyToAction(ANSI.endAlt)).toEqual({ type: "END" });
+    expect(keyToAction(ANSI.end2)).toEqual({ type: "END" });
+    expect(keyToAction(ANSI.cmdRight)).toEqual({ type: "END" });
+    expect(keyToAction(ANSI.ctrlE)).toEqual({ type: "END" });
+  });
+
+  test("Option+arrow keys should map to WORD navigation actions", () => {
+    expect(keyToAction(ANSI.optionLeft)).toEqual({ type: "WORD_LEFT" });
+    expect(keyToAction(ANSI.optionLeftAlt)).toEqual({ type: "WORD_LEFT" });
+    expect(keyToAction(ANSI.optionRight)).toEqual({ type: "WORD_RIGHT" });
+    expect(keyToAction(ANSI.optionRightAlt)).toEqual({ type: "WORD_RIGHT" });
+  });
+
+  test("Ctrl+arrow keys (Windows/Linux) should map to WORD navigation actions", () => {
+    expect(keyToAction(ANSI.ctrlLeft)).toEqual({ type: "WORD_LEFT" });
+    expect(keyToAction(ANSI.ctrlRight)).toEqual({ type: "WORD_RIGHT" });
   });
 });

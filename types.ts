@@ -32,6 +32,31 @@ export const ANSI = {
   arrowLeft: "\x1b[D",
   arrowRight: "\x1b[C",
   space: " ",
+
+  // Home and End keys to move cursor to beginning and end of line
+  home: "\x1b[H",
+  homeAlt: "\x1bOH",
+  home2: "\x1b[1~",
+  end: "\x1b[F",
+  endAlt: "\x1bOF",
+  end2: "\x1b[4~",
+
+  // Option + arrow keys to move cursor by word left and right
+  optionLeft: "\x1bb",
+  optionRight: "\x1bf",
+  optionLeftAlt: "\x1b[1;3D",
+  optionRightAlt: "\x1b[1;3C",
+
+  // Cmd + arrow keys to move cursor by line left and right
+  cmdLeft: "\x1b[1;9D",
+  cmdRight: "\x1b[1;9C",
+  // Ctrl+A / Ctrl+E (readline style, sent by macOS Terminal for Cmd+arrows)
+  ctrlA: "\x01",
+  ctrlE: "\x05",
+
+  // Ctrl + arrow keys to move cursor by word left and right on Windows/Linux
+  ctrlLeft: "\x1b[1;5D",
+  ctrlRight: "\x1b[1;5C",
 };
 
 export type Config = {

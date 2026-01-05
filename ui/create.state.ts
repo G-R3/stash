@@ -1,5 +1,31 @@
 import { ANSI, State } from "../types";
 
+// Find the start of the previous word from cursor position
+const findPrevWordBoundary = (text: string, pos: number): number => {
+  if (pos === 0) return 0;
+
+  let i = pos - 1;
+  // Skip any spaces before cursor
+  while (i > 0 && text[i] === " ") i--;
+  // Move back until we hit a space or start
+  while (i > 0 && text[i - 1] !== " ") i--;
+
+  return i;
+};
+
+// Find the end of the next word from cursor position
+const findNextWordBoundary = (text: string, pos: number): number => {
+  if (pos >= text.length) return text.length;
+
+  let i = pos;
+  // Skip current word characters
+  while (i < text.length && text[i] !== " ") i++;
+  // Skip any spaces after word
+  while (i < text.length && text[i] === " ") i++;
+
+  return i;
+};
+
 export const createInitialState = (): State => ({
   text: "",
   focusedField: 0,
@@ -19,7 +45,11 @@ export type StateActions =
   | { type: "ARROW_RIGHT" }
   | { type: "ARROW_UP" }
   | { type: "ARROW_DOWN" }
-  | { type: "SPACE" };
+  | { type: "SPACE" }
+  | { type: "HOME" }
+  | { type: "END" }
+  | { type: "WORD_LEFT" }
+  | { type: "WORD_RIGHT" };
 
 export type ReducerResult = { done: boolean; state: State; error?: string };
 
@@ -53,7 +83,17 @@ export const createReducer = (
     }
     case "ARROW_LEFT": {
       if (state.focusedField === 0) {
-        // TODO: move cursor left on name field
+        if (state.cursorPosition === 0) {
+          return { done: false, state };
+        }
+
+        return {
+          done: false,
+          state: {
+            ...state,
+            cursorPosition: state.cursorPosition - 1,
+          },
+        };
       }
       if (state.focusedField === 1) {
         return {
@@ -72,7 +112,17 @@ export const createReducer = (
     }
     case "ARROW_RIGHT": {
       if (state.focusedField === 0) {
-        // TODO: move cursor right on name field
+        if (state.cursorPosition === state.text.length) {
+          return { done: false, state };
+        }
+
+        return {
+          done: false,
+          state: {
+            ...state,
+            cursorPosition: state.cursorPosition + 1,
+          },
+        };
       }
       if (state.focusedField === 1) {
         return {
@@ -107,9 +157,70 @@ export const createReducer = (
         },
       };
     }
+    case "HOME": {
+      if (state.focusedField !== 0) {
+        return { done: false, state };
+      }
+      return {
+        done: false,
+        state: {
+          ...state,
+          cursorPosition: 0,
+        },
+      };
+    }
+    case "END": {
+      if (state.focusedField !== 0) {
+        return { done: false, state };
+      }
+      return {
+        done: false,
+        state: {
+          ...state,
+          cursorPosition: state.text.length,
+        },
+      };
+    }
+    case "WORD_LEFT": {
+      if (state.focusedField !== 0) {
+        return { done: false, state };
+      }
+      return {
+        done: false,
+        state: {
+          ...state,
+          cursorPosition: findPrevWordBoundary(
+            state.text,
+            state.cursorPosition
+          ),
+        },
+      };
+    }
+    case "WORD_RIGHT": {
+      if (state.focusedField !== 0) {
+        return { done: false, state };
+      }
+      return {
+        done: false,
+        state: {
+          ...state,
+          cursorPosition: findNextWordBoundary(
+            state.text,
+            state.cursorPosition
+          ),
+        },
+      };
+    }
     case "SPACE": {
       if (state.focusedField === 0) {
-        return { done: false, state: { ...state, text: state.text + " " } };
+        return {
+          done: false,
+          state: {
+            ...state,
+            text: state.text + " ",
+            cursorPosition: state.cursorPosition + 1,
+          },
+        };
       }
 
       if (state.focusedField === 1) {
@@ -158,8 +269,6 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "TAB" };
     case ANSI.enter:
       return { type: "SUBMIT" };
-    default:
-      return { type: "INPUT_CHAR", char: key };
     case ANSI.arrowLeft:
       return { type: "ARROW_LEFT" };
     case ANSI.arrowRight:
@@ -170,5 +279,31 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "ARROW_DOWN" };
     case ANSI.space:
       return { type: "SPACE" };
+    // HOME key- to move cursor to beginning of line
+    case ANSI.home:
+    case ANSI.homeAlt:
+    case ANSI.home2:
+    case ANSI.cmdLeft:
+    case ANSI.ctrlA:
+      return { type: "HOME" };
+    // END key- to move cursor to end of line
+    case ANSI.end:
+    case ANSI.endAlt:
+    case ANSI.end2:
+    case ANSI.cmdRight:
+    case ANSI.ctrlE:
+      return { type: "END" };
+    // Option+Left (macOS) / Ctrl+Left (Windows/Linux) - move cursor by word left
+    case ANSI.optionLeft:
+    case ANSI.optionLeftAlt:
+    case ANSI.ctrlLeft:
+      return { type: "WORD_LEFT" };
+    // Option+Right (macOS) / Ctrl+Right (Windows/Linux) - move cursor by word right
+    case ANSI.optionRight:
+    case ANSI.optionRightAlt:
+    case ANSI.ctrlRight:
+      return { type: "WORD_RIGHT" };
+    default:
+      return { type: "INPUT_CHAR", char: key };
   }
 };

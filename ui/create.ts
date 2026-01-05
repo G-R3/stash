@@ -163,11 +163,11 @@ function render(state: State, error?: string) {
     )
   );
 
-  const cursorCol = "Name: ".length + state.text.length + 1;
+  const cursorCol = "Name: ".length + 1;
 
   if (state.focusedField === 0) {
     write(ANSI.cursorShow);
-    write(`\x1b[3;${cursorCol}H`); // sets the cursor position to the end of the name field label.
+    write(`\x1b[3;${cursorCol + state.cursorPosition}H`); // sets the cursor position to the end of the name field label.
   } else {
     write(ANSI.cursorHide);
   }
