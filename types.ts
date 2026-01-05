@@ -37,7 +37,7 @@ export const ANSI = {
   space: " ",
 
   // Home and End keys to move cursor to beginning and end of line
-  home: "\x1b[H",
+  home: "\x1b[H", // same code as cursorHome but different purpose depending on context
   homeAlt: "\x1bOH",
   home2: "\x1b[1~",
   end: "\x1b[F",

@@ -267,6 +267,8 @@ export const createReducer = (
           },
         };
       }
+
+      return { done: false, state };
     }
     case "SUBMIT": {
       // will validate here
