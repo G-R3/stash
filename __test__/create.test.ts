@@ -204,6 +204,67 @@ describe("create", () => {
     expect(result.state.cursorPosition).toBe(1);
   });
 
+  test("BACKSPACE should delete character before cursor position", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello world",
+      cursorPosition: 6,
+    };
+    const result = createReducer(state, { type: "BACKSPACE" });
+
+    expect(result.state.text).toBe("helloworld");
+    expect(result.state.cursorPosition).toBe(5);
+  });
+
+  test("BACKSPACE at end of text should delete last character", () => {
+    const state = {
+      ...createInitialState(),
+      text: "test",
+      cursorPosition: 4, // at end
+    };
+    const result = createReducer(state, { type: "BACKSPACE" });
+
+    expect(result.state.text).toBe("tes");
+    expect(result.state.cursorPosition).toBe(3);
+  });
+
+  test("BACKSPACE in middle of word should delete character before cursor", () => {
+    const state = {
+      ...createInitialState(),
+      text: "test test",
+      cursorPosition: 4, // after first "test"
+    };
+    const result = createReducer(state, { type: "BACKSPACE" });
+
+    expect(result.state.text).toBe("tes test");
+    expect(result.state.cursorPosition).toBe(3);
+  });
+
+  test("BACKSPACE at position 0 should do nothing", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello",
+      cursorPosition: 0,
+    };
+    const result = createReducer(state, { type: "BACKSPACE" });
+
+    expect(result.state.text).toBe("hello");
+    expect(result.state.cursorPosition).toBe(0);
+  });
+
+  test("BACKSPACE should do nothing when not focused on text field", () => {
+    const state = {
+      ...createInitialState(),
+      text: "hello",
+      cursorPosition: 3,
+      focusedField: 1,
+    };
+    const result = createReducer(state, { type: "BACKSPACE" });
+
+    expect(result.state.text).toBe("hello");
+    expect(result.state.cursorPosition).toBe(3);
+  });
+
   test("HOME should move cursor to beginning of text", () => {
     const state = {
       ...createInitialState(),
@@ -349,5 +410,10 @@ describe("keyToAction navigation mappings", () => {
   test("Ctrl+arrow keys (Windows/Linux) should map to WORD navigation actions", () => {
     expect(keyToAction(ANSI.ctrlLeft)).toEqual({ type: "WORD_LEFT" });
     expect(keyToAction(ANSI.ctrlRight)).toEqual({ type: "WORD_RIGHT" });
+  });
+
+  test("Backspace keys should map to BACKSPACE action", () => {
+    expect(keyToAction(ANSI.backspace)).toEqual({ type: "BACKSPACE" });
+    expect(keyToAction(ANSI.backspaceAlt)).toEqual({ type: "BACKSPACE" });
   });
 });

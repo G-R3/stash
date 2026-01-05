@@ -49,7 +49,8 @@ export type StateActions =
   | { type: "HOME" }
   | { type: "END" }
   | { type: "WORD_LEFT" }
-  | { type: "WORD_RIGHT" };
+  | { type: "WORD_RIGHT" }
+  | { type: "BACKSPACE" };
 
 export type ReducerResult = { done: boolean; state: State; error?: string };
 
@@ -214,6 +215,24 @@ export const createReducer = (
         },
       };
     }
+    case "BACKSPACE": {
+      if (state.focusedField !== 0) {
+        return { done: false, state };
+      }
+      if (state.cursorPosition === 0) {
+        return { done: false, state };
+      }
+      return {
+        done: false,
+        state: {
+          ...state,
+          text:
+            state.text.slice(0, state.cursorPosition - 1) +
+            state.text.slice(state.cursorPosition),
+          cursorPosition: state.cursorPosition - 1,
+        },
+      };
+    }
     case "SPACE": {
       if (state.focusedField === 0) {
         return {
@@ -285,6 +304,9 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "ARROW_DOWN" };
     case ANSI.space:
       return { type: "SPACE" };
+    case ANSI.backspace:
+    case ANSI.backspaceAlt:
+      return { type: "BACKSPACE" };
     // HOME key- to move cursor to beginning of line
     case ANSI.home:
     case ANSI.homeAlt:

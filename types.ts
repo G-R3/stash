@@ -27,6 +27,8 @@ export const ANSI = {
   escape: "\x1b",
   enter: "\r",
   tab: "\t",
+  backspace: "\x7f",
+  backspaceAlt: "\x08",
   arrowDown: "\x1b[B",
   arrowUp: "\x1b[A",
   arrowLeft: "\x1b[D",
