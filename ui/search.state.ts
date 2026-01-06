@@ -27,7 +27,7 @@ const findNextWordBoundary = (text: string, pos: number): number => {
   return i;
 };
 
-export const filterItems = (query: string, config: Config) =>
+const filterItems = (query: string, config: Config) =>
   getStashItems(config).filter((item) =>
     item.name.toLowerCase().includes(query.toLowerCase())
   );
