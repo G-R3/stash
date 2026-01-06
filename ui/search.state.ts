@@ -28,12 +28,27 @@ const findNextWordBoundary = (text: string, pos: number): number => {
   return i;
 };
 
-export const createInitialState = (config: Config): SearchState => ({
-  query: "",
-  cursorPosition: 0,
-  selectedIndex: 0,
-  items: getStashItems(config),
-});
+const filterItems = (query: string, config: Config) =>
+  getStashItems(config).filter((item) =>
+    item.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+const updateQueryAndItems = (
+  state: SearchState,
+  newQuery: string,
+  newCursorPosition: number
+): ReducerResult => {
+  return {
+    done: false,
+    state: {
+      ...state,
+      query: newQuery,
+      cursorPosition: newCursorPosition,
+      items: filterItems(newQuery, config),
+      selectedIndex: 0,
+    },
+  };
+};
 
 export type StateActions =
   | { type: "INPUT_CHAR"; char: string }
@@ -49,11 +64,19 @@ export type StateActions =
   | { type: "WORD_LEFT" }
   | { type: "WORD_RIGHT" }
   | { type: "BACKSPACE" };
+
 export type ReducerResult = {
   done: boolean;
   state: SearchState;
   error?: string;
 };
+
+export const createInitialState = (config: Config): SearchState => ({
+  query: "",
+  cursorPosition: 0,
+  selectedIndex: 0,
+  items: getStashItems(config),
+});
 
 export const createReducer = (
   state: SearchState,
@@ -61,31 +84,19 @@ export const createReducer = (
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
-      const query =
+      const newQuery =
         state.query.slice(0, state.cursorPosition) +
         action.char +
         state.query.slice(state.cursorPosition);
 
-      const filteredStash = state.items.filter((item) =>
-        item.name.includes(query)
-      );
-
-      return {
-        done: false,
-        state: {
-          ...state,
-          query,
-          cursorPosition: state.cursorPosition + 1,
-          items: filteredStash,
-        },
-      };
+      return updateQueryAndItems(state, newQuery, state.cursorPosition + 1);
     }
     case "TAB": {
       return {
         done: false,
         state: {
           ...state,
-          //   selectedIndex: (state.selectedIndex + 1) % items.length,
+          selectedIndex: (state.selectedIndex + 1) % state.items.length,
         },
       };
     }
@@ -190,32 +201,15 @@ export const createReducer = (
         state.query.slice(0, state.cursorPosition - 1) +
         state.query.slice(state.cursorPosition);
 
-      const filteredStash = getStashItems(config).filter((item) =>
-        item.name.includes(newQuery)
-      );
-
-      return {
-        done: false,
-        state: {
-          ...state,
-          query: newQuery,
-          cursorPosition: state.cursorPosition - 1,
-          items: filteredStash,
-        },
-      };
+      return updateQueryAndItems(state, newQuery, state.cursorPosition - 1);
     }
     case "SPACE": {
-      return {
-        done: false,
-        state: {
-          ...state,
-          query:
-            state.query.slice(0, state.cursorPosition) +
-            " " +
-            state.query.slice(state.cursorPosition),
-          cursorPosition: state.cursorPosition + 1,
-        },
-      };
+      const newQuery =
+        state.query.slice(0, state.cursorPosition) +
+        " " +
+        state.query.slice(state.cursorPosition);
+
+      return updateQueryAndItems(state, newQuery, state.cursorPosition + 1);
     }
 
     case "CANCEL": {
