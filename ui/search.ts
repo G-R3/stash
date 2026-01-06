@@ -1,4 +1,4 @@
-import { ANSI, Config, StashItem } from "../types";
+import { ANSI, Config, SearchState, StashItem } from "../types";
 import {
   cleanUp,
   clearScreen,
@@ -8,12 +8,11 @@ import {
   padEnd,
   relativeTime,
   style,
+  write,
   writeLine,
 } from "../utils";
-
-type State = {
-  selectedIndex: number;
-};
+import { createInitialState, createReducer } from "./search.state";
+import { keyToAction } from "./search.state";
 
 const iconMap = {
   directory: "📁",
@@ -22,48 +21,47 @@ const iconMap = {
 
 export function searchUI(config: Config, command?: string) {
   clearScreen();
-  const items = getStashItems(config);
 
-  const state: State = {
-    selectedIndex: 0,
-  };
+  let state = createInitialState(config);
 
   process.stdin.on("data", (data) => {
     const key = data.toString();
 
-    if (key === ANSI.escape) {
+    const action = keyToAction(key);
+
+    if (!action) return;
+
+    const result = createReducer(state, action);
+
+    if (result.done) {
       clearScreen();
       cleanUp();
       process.exit(0);
     }
 
-    if (key === ANSI.arrowUp) {
-      state.selectedIndex = Math.max(0, state.selectedIndex - 1);
-    }
-
-    if (key === ANSI.arrowDown) {
-      state.selectedIndex = Math.min(items.length - 1, state.selectedIndex + 1);
-    }
-
-    if (key === ANSI.tab) {
-      state.selectedIndex = (state.selectedIndex + 1) % items.length;
-    }
-
-    render(state, items as StashItem[]);
+    state = result.state;
+    render(result.state);
   });
 
   process.stdin.setRawMode(true);
   process.stdin.resume();
 
-  render(state, items as StashItem[]);
+  render(state);
 }
 
-function render(state: State, items: StashItem[]) {
+function render(state: SearchState) {
   clearScreen();
   const { cols } = getTerminalSize();
 
+  const { items } = state;
+
   writeLine(style("Search stash items", [ANSI.cyan, ANSI.bold]));
   writeLine(style("─".repeat(Math.min(cols - 4, 45)), [ANSI.dim]));
+  writeLine();
+
+  write(style("Search: ", [ANSI.dim]));
+  writeLine(state.query);
+
   writeLine();
 
   items.forEach((item, index) => {
@@ -80,4 +78,9 @@ function render(state: State, items: StashItem[]) {
 
     writeLine(isSelected ? style(line, [ANSI.inverse]) : line);
   });
+
+  const cursorCol = "Search: ".length + 1;
+
+  write(ANSI.cursorShow);
+  write(`\x1b[4;${cursorCol + state.cursorPosition}H`); // sets the cursor position to the end of the search field label.
 }
