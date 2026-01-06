@@ -54,6 +54,7 @@ export function createUI(config: Config) {
     render(state, error);
   });
 
+  // https://stackoverflow.com/questions/5006821/nodejs-how-to-read-keystrokes-from-stdin
   // without this, we would only get streams once enter is pressed
   process.stdin.setRawMode(true);
   process.stdin.resume();
