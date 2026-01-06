@@ -31,8 +31,8 @@ export function createUI(config: Config) {
     const result = createReducer(state, action);
 
     if (result.done) {
-      cleanUp();
       clearScreen();
+      cleanUp();
 
       if (action.type === "SUBMIT") {
         const createResult = createItem(state, config);
