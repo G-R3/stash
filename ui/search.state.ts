@@ -61,15 +61,22 @@ export const createReducer = (
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
+      const query =
+        state.query.slice(0, state.cursorPosition) +
+        action.char +
+        state.query.slice(state.cursorPosition);
+
+      const filteredStash = state.items.filter((item) =>
+        item.name.includes(query)
+      );
+
       return {
         done: false,
         state: {
           ...state,
-          query:
-            state.query.slice(0, state.cursorPosition) +
-            action.char +
-            state.query.slice(state.cursorPosition),
+          query,
           cursorPosition: state.cursorPosition + 1,
+          items: filteredStash,
         },
       };
     }
@@ -173,16 +180,27 @@ export const createReducer = (
     }
     case "BACKSPACE": {
       if (state.cursorPosition === 0) {
-        return { done: false, state };
+        return {
+          done: false,
+          state: { ...state, items: getStashItems(config) },
+        };
       }
+
+      const newQuery =
+        state.query.slice(0, state.cursorPosition - 1) +
+        state.query.slice(state.cursorPosition);
+
+      const filteredStash = getStashItems(config).filter((item) =>
+        item.name.includes(newQuery)
+      );
+
       return {
         done: false,
         state: {
           ...state,
-          query:
-            state.query.slice(0, state.cursorPosition - 1) +
-            state.query.slice(state.cursorPosition),
+          query: newQuery,
           cursorPosition: state.cursorPosition - 1,
+          items: filteredStash,
         },
       };
     }
