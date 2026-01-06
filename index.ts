@@ -29,7 +29,7 @@ async function main() {
         process.exit(0);
       }
       // Moving this here as a temp fix for cli.test.ts creating
-      // a .stash` directory in the root directory.
+      // a .stash` directory in the root.
       getStashDir(config);
 
       createUI(config);
@@ -50,7 +50,7 @@ async function main() {
 
 /**
  * Handles rendering the search/list TUI.
- * Will render a searchable list of all available files/directories and allows the user to select and delete.
+ * Will render a searchable list of all available files/directories
  */
 function searchList(command?: string) {
   console.log("Searching and listing files/directories");
