@@ -10,6 +10,14 @@ export type State = {
   cursorPosition: number;
 };
 
+export type StashItem = {
+  name: string;
+  type: "file" | "directory";
+  path: string;
+  mtime: Date;
+  size: number;
+};
+
 export const ANSI = {
   bold: "\x1b[1m",
   green: "\x1b[32m",

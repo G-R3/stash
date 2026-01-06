@@ -4,6 +4,7 @@ import { Commands } from "./types";
 import { getStashDir, showHelpMessage } from "./utils";
 import { createUI } from "./ui/create";
 import { config } from "./config";
+import { searchUI } from "./ui/search";
 
 async function main() {
   const { values: flags, positionals } = parseArgs({
@@ -39,10 +40,10 @@ async function main() {
         process.exit(0);
       }
       if (command) {
-        searchList(command);
+        searchUI(config, command);
         break;
       }
-      searchList();
+      searchUI(config);
       break;
   }
 }

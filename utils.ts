@@ -1,5 +1,6 @@
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, statSync } from "fs";
 import { Commands, ANSI, Config } from "./types";
+import { join } from "path";
 
 export function style(text: string, styles: string[]): string {
   if (styles.length === 0) {
@@ -82,4 +83,59 @@ export function getTerminalSize() {
     rows: process.stdout.rows || process.stderr.rows || 24,
     cols: process.stdout.columns || process.stderr.columns || 80,
   };
+}
+
+export function getStashItems(config: Config) {
+  const stashPath = getStashDir(config);
+
+  const items = readdirSync(stashPath);
+
+  return items.map((item) => {
+    const fullPath = join(stashPath, item);
+    const stats = statSync(fullPath);
+
+    return {
+      name: item,
+      type: stats.isFile() ? "file" : "directory",
+      path: fullPath,
+      mtime: stats.mtime,
+      size: stats.size,
+    };
+  });
+}
+
+export function isDirectory(path: string) {
+  return statSync(path).isDirectory();
+}
+
+export function padEnd(
+  str: string,
+  length: number,
+  char: string = " "
+): string {
+  if (str.length >= length) {
+    return str;
+  }
+  return str + char.repeat(length - str.length);
+}
+
+export function relativeTime(date: Date) {
+  const diff = Date.now() - date.getTime();
+
+  const units: [number, string][] = [
+    [31536000000, "y"],
+    [2592000000, "mo"],
+    [86400000, "d"],
+    [3600000, "h"],
+    [60000, "m"],
+    [1000, "s"],
+  ];
+
+  for (const [ms, unit] of units) {
+    if (diff >= ms) {
+      return `${Math.floor(diff / ms)}${unit} ago`;
+    }
+  }
+
+  return "just now";
 }
