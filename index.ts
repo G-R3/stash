@@ -31,7 +31,7 @@ async function main() {
       // a .stash` directory in the root directory.
       getStashDir(config);
 
-      await createUI(config);
+      createUI(config);
       break;
     default:
       if (flags.help) {
