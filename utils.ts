@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, statSync } from "fs";
-import { Commands, ANSI, Config } from "./types";
+import { Commands, ANSI, Config, StashItem } from "./types";
 import { join } from "path";
 
 export function style(text: string, styles: string[]): string {
@@ -86,7 +86,7 @@ export function getTerminalSize() {
   };
 }
 
-export function getStashItems(config: Config) {
+export function getStashItems(config: Config): StashItem[] {
   const stashPath = getStashDir(config);
 
   const items = readdirSync(stashPath);
