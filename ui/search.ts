@@ -31,7 +31,7 @@ export function searchUI(config: Config, command?: string) {
 
     if (!action) return;
 
-    const result = createReducer(state, action);
+    const result = createReducer(state, action, config);
 
     if (result.done) {
       clearScreen();

@@ -1,4 +1,3 @@
-import { config } from "../config";
 import { ANSI, Config, SearchState } from "../types";
 import { getStashItems } from "../utils";
 
@@ -28,7 +27,7 @@ const findNextWordBoundary = (text: string, pos: number): number => {
   return i;
 };
 
-const filterItems = (query: string, config: Config) =>
+export const filterItems = (query: string, config: Config) =>
   getStashItems(config).filter((item) =>
     item.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -36,7 +35,8 @@ const filterItems = (query: string, config: Config) =>
 const updateQueryAndItems = (
   state: SearchState,
   newQuery: string,
-  newCursorPosition: number
+  newCursorPosition: number,
+  config: Config
 ): ReducerResult => {
   return {
     done: false,
@@ -80,7 +80,8 @@ export const createInitialState = (config: Config): SearchState => ({
 
 export const createReducer = (
   state: SearchState,
-  action: StateActions
+  action: StateActions,
+  config: Config
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
@@ -89,7 +90,12 @@ export const createReducer = (
         action.char +
         state.query.slice(state.cursorPosition);
 
-      return updateQueryAndItems(state, newQuery, state.cursorPosition + 1);
+      return updateQueryAndItems(
+        state,
+        newQuery,
+        state.cursorPosition + 1,
+        config
+      );
     }
     case "TAB": {
       return {
@@ -201,7 +207,12 @@ export const createReducer = (
         state.query.slice(0, state.cursorPosition - 1) +
         state.query.slice(state.cursorPosition);
 
-      return updateQueryAndItems(state, newQuery, state.cursorPosition - 1);
+      return updateQueryAndItems(
+        state,
+        newQuery,
+        state.cursorPosition - 1,
+        config
+      );
     }
     case "SPACE": {
       const newQuery =
@@ -209,7 +220,12 @@ export const createReducer = (
         " " +
         state.query.slice(state.cursorPosition);
 
-      return updateQueryAndItems(state, newQuery, state.cursorPosition + 1);
+      return updateQueryAndItems(
+        state,
+        newQuery,
+        state.cursorPosition + 1,
+        config
+      );
     }
 
     case "CANCEL": {
