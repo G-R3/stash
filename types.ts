@@ -10,6 +10,13 @@ export type State = {
   cursorPosition: number;
 };
 
+export type SearchState = {
+  selectedIndex: number;
+  query: string;
+  cursorPosition: number;
+  items: StashItem[];
+};
+
 export type StashItem = {
   name: string;
   type: "file" | "directory";
