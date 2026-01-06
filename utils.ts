@@ -12,13 +12,14 @@ export function style(text: string, styles: string[]): string {
 export function clearScreen(): void {
   process.stdout.write(ANSI.clearScreen);
   process.stdout.write(ANSI.cursorHome);
-  process.stdout.write(ANSI.cursorShow);
+  process.stdout.write(ANSI.cursorHide);
 }
 
 export function cleanUp(): void {
   process.stdin.setRawMode(false);
   process.stdin.removeAllListeners("data");
   process.stdin.pause();
+  process.stdout.write(ANSI.cursorShow);
 }
 
 export function showHelpMessage(command: string): void {
