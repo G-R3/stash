@@ -79,8 +79,8 @@ function render(state: SearchState) {
     writeLine(isSelected ? style(line, [ANSI.inverse]) : line);
   });
 
-  items.length === 0 &&
-    writeLine(style("ctrl+k to create new item | esc to cancel", [ANSI.dim]));
+  writeLine();
+  writeLine(style("esc to cancel | ctrl+d to delete item", [ANSI.dim]));
 
   const cursorCol = "Search: ".length + 1;
 
