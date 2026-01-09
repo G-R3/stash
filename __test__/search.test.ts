@@ -448,6 +448,41 @@ describe("search", () => {
     });
   });
 
+  describe("DELETE_ITEM", () => {
+    test("Should delete the selected item", () => {
+      const initialState = createInitialState(MOCK_CONFIG);
+
+      // move to index 1 atleast
+      const state = createReducer(
+        initialState,
+        { type: "ARROW_DOWN" },
+        MOCK_CONFIG
+      ).state;
+
+      const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
+
+      expect(result.state.items).toHaveLength(state.items.length - 1);
+    });
+
+    test("Should not delete if no item is selected", () => {
+      const initialState = createInitialState(MOCK_CONFIG);
+
+      // use query with not result to have no items selected
+      const state = createReducer(
+        initialState,
+        { type: "INPUT_CHAR", char: "zzzznotfound" },
+        MOCK_CONFIG
+      ).state;
+
+      console.log(state);
+
+      // attemp to delete
+      const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
+
+      expect(result.state.items).toEqual(state.items);
+    });
+  });
+
   describe("keyToAction", () => {
     test("Escape should map to CANCEL", () => {
       expect(keyToAction(ANSI.escape)).toEqual({ type: "CANCEL" });
