@@ -1,5 +1,6 @@
 import { ANSI, Config, SearchState } from "../types";
 import { getStashItems } from "../utils";
+import { rmSync } from "fs";
 
 // Find the start of the previous word from cursor position
 const findPrevWordBoundary = (text: string, pos: number): number => {
@@ -63,7 +64,8 @@ export type StateActions =
   | { type: "END" }
   | { type: "WORD_LEFT" }
   | { type: "WORD_RIGHT" }
-  | { type: "BACKSPACE" };
+  | { type: "BACKSPACE" }
+  | { type: "DELETE_ITEM" };
 
 export type ReducerResult = {
   done: boolean;
@@ -227,7 +229,26 @@ export const createReducer = (
         config
       );
     }
+    case "DELETE_ITEM": {
+      const itemToDelete = state.items[state.selectedIndex];
 
+      if (!itemToDelete) {
+        return {
+          done: false,
+          state,
+        };
+      }
+
+      rmSync(itemToDelete.path, { recursive: true });
+
+      return {
+        done: false,
+        state: {
+          ...state,
+          items: state.items.filter((item) => item.path !== itemToDelete.path),
+        },
+      };
+    }
     case "CANCEL": {
       return { done: true, state: createInitialState(config) };
     }
@@ -281,6 +302,8 @@ export const keyToAction = (key: string): StateActions => {
     case ANSI.optionRightAlt:
     case ANSI.ctrlRight:
       return { type: "WORD_RIGHT" };
+    case ANSI.ctrlD:
+      return { type: "DELETE_ITEM" };
     default:
       return { type: "INPUT_CHAR", char: key };
   }

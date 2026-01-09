@@ -72,6 +72,9 @@ export const ANSI = {
   ctrlA: "\x01",
   ctrlE: "\x05",
 
+  // Ctrl + D
+  ctrlD: "\x04",
+
   // Ctrl + arrow keys to move cursor by word left and right on Windows/Linux
   ctrlLeft: "\x1b[1;5D",
   ctrlRight: "\x1b[1;5C",
