@@ -92,12 +92,9 @@ export const createReducer = (
         action.char +
         state.query.slice(state.cursorPosition);
 
-      return updateQueryAndItems(
-        state,
-        newQuery,
-        state.cursorPosition + 1,
-        config
-      );
+      const newCursorPosition = state.cursorPosition + action.char.length;
+
+      return updateQueryAndItems(state, newQuery, newCursorPosition, config);
     }
     case "TAB": {
       return {
