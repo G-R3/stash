@@ -407,8 +407,6 @@ describe("search", () => {
         MOCK_CONFIG
       ).state;
 
-      console.log(state);
-
       // attemp to delete
       const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
 
