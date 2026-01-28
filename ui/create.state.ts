@@ -1,30 +1,5 @@
 import { ANSI, State } from "../types";
-
-// Find the start of the previous word from cursor position
-const findPrevWordBoundary = (text: string, pos: number): number => {
-  if (pos === 0) return 0;
-
-  let i = pos - 1;
-  // Skip any spaces before cursor
-  while (i > 0 && text[i] === " ") i--;
-  // Move back until we hit a space or start
-  while (i > 0 && text[i - 1] !== " ") i--;
-
-  return i;
-};
-
-// Find the end of the next word from cursor position
-const findNextWordBoundary = (text: string, pos: number): number => {
-  if (pos >= text.length) return text.length;
-
-  let i = pos;
-  // Skip current word characters
-  while (i < text.length && text[i] !== " ") i++;
-  // Skip any spaces after word
-  while (i < text.length && text[i] === " ") i++;
-
-  return i;
-};
+import { deleteBack, insertChar, moveLeft, moveRight, moveToEnd, moveToStart, moveWordLeft, moveWordRight } from "./text-field";
 
 export const createInitialState = (): State => ({
   text: "",
@@ -64,17 +39,14 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const newCursorPosition = state.cursorPosition + action.char.length;
+      const {text, cursorPosition} = insertChar({text: state.text, cursorPosition:state.cursorPosition}, action.char);
 
       return {
         done: false,
         state: {
           ...state,
-          text:
-            state.text.slice(0, state.cursorPosition) +
-            action.char +
-            state.text.slice(state.cursorPosition),
-          cursorPosition: newCursorPosition,
+          text,
+          cursorPosition,
         },
       };
     }
@@ -93,11 +65,15 @@ export const createReducer = (
           return { done: false, state };
         }
 
+        const {cursorPosition} = moveLeft({text: state.text, cursorPosition:state.cursorPosition});
+
+      
+
         return {
           done: false,
           state: {
             ...state,
-            cursorPosition: state.cursorPosition - 1,
+            cursorPosition,
           },
         };
       }
@@ -122,11 +98,15 @@ export const createReducer = (
           return { done: false, state };
         }
 
+
+        const {cursorPosition} = moveRight({text: state.text, cursorPosition:state.cursorPosition});
+
+
         return {
           done: false,
           state: {
             ...state,
-            cursorPosition: state.cursorPosition + 1,
+            cursorPosition,
           },
         };
       }
@@ -167,11 +147,14 @@ export const createReducer = (
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
+
+      const {cursorPosition} = moveToStart({text: state.text, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: 0,
+          cursorPosition,
         },
       };
     }
@@ -179,11 +162,14 @@ export const createReducer = (
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
+
+      const {cursorPosition} = moveToEnd({text: state.text, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: state.text.length,
+          cursorPosition,
         },
       };
     }
@@ -191,14 +177,14 @@ export const createReducer = (
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
+
+      const {cursorPosition} = moveWordLeft({text: state.text, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: findPrevWordBoundary(
-            state.text,
-            state.cursorPosition
-          ),
+          cursorPosition,
         },
       };
     }
@@ -206,14 +192,14 @@ export const createReducer = (
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
+
+      const {cursorPosition} = moveWordRight({text: state.text, cursorPosition: state.cursorPosition});
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: findNextWordBoundary(
-            state.text,
-            state.cursorPosition
-          ),
+          cursorPosition,
         },
       };
     }
@@ -221,31 +207,27 @@ export const createReducer = (
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
-      if (state.cursorPosition === 0) {
-        return { done: false, state };
-      }
+
+      const {text, cursorPosition} = deleteBack({text: state.text, cursorPosition: state.cursorPosition})
+     
       return {
         done: false,
         state: {
           ...state,
-          text:
-            state.text.slice(0, state.cursorPosition - 1) +
-            state.text.slice(state.cursorPosition),
-          cursorPosition: state.cursorPosition - 1,
+          text,
+          cursorPosition,
         },
       };
     }
     case "SPACE": {
       if (state.focusedField === 0) {
+        const {text, cursorPosition} = insertChar({text: state.text, cursorPosition: state.cursorPosition}, " ")
         return {
           done: false,
           state: {
             ...state,
-            text:
-              state.text.slice(0, state.cursorPosition) +
-              " " +
-              state.text.slice(state.cursorPosition),
-            cursorPosition: state.cursorPosition + 1,
+            text,
+            cursorPosition,
           },
         };
       }
