@@ -43,7 +43,6 @@ export type StateActions =
   | { type: "ARROW_RIGHT" }
   | { type: "ARROW_UP" }
   | { type: "ARROW_DOWN" }
-  | { type: "SPACE" }
   | { type: "HOME" }
   | { type: "END" }
   | { type: "WORD_LEFT" }
@@ -212,14 +211,6 @@ export const createReducer = (
         text: state.query,
         cursorPosition: state.cursorPosition,
       });
-
-      return updateQueryAndItems(state, text, cursorPosition, config);
-    }
-    case "SPACE": {
-      const { text, cursorPosition } = insertChar(
-        { text: state.query, cursorPosition: state.cursorPosition },
-        " ",
-      );
 
       return updateQueryAndItems(state, text, cursorPosition, config);
     }

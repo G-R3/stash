@@ -210,6 +210,29 @@ describe("create", () => {
 });
 
 describe("keyToAction navigation mappings", () => {
+  test("Escape should map to CANCEL action", () => {
+    expect(keyToAction(ANSI.escape)).toEqual({ type: "CANCEL" });
+  });
+
+  test("Tab should map to TAB action", () => {
+    expect(keyToAction(ANSI.tab)).toEqual({ type: "TAB" });
+  });
+
+  test("Enter should map to SUBMIT action", () => {
+    expect(keyToAction(ANSI.enter)).toEqual({ type: "SUBMIT" });
+  });
+
+  test("Arrow keys should map to corresponding ARROW actions", () => {
+    expect(keyToAction(ANSI.arrowLeft)).toEqual({ type: "ARROW_LEFT" });
+    expect(keyToAction(ANSI.arrowRight)).toEqual({ type: "ARROW_RIGHT" });
+    expect(keyToAction(ANSI.arrowUp)).toEqual({ type: "ARROW_UP" });
+    expect(keyToAction(ANSI.arrowDown)).toEqual({ type: "ARROW_DOWN" });
+  });
+
+  test("Space key should map to SPACE action", () => {
+    expect(keyToAction(ANSI.space)).toEqual({ type: "SPACE" });
+  });
+
   test("HOME keys should map to HOME action", () => {
     expect(keyToAction(ANSI.home)).toEqual({ type: "HOME" });
     expect(keyToAction(ANSI.homeAlt)).toEqual({ type: "HOME" });
@@ -241,5 +264,11 @@ describe("keyToAction navigation mappings", () => {
   test("Backspace keys should map to BACKSPACE action", () => {
     expect(keyToAction(ANSI.backspace)).toEqual({ type: "BACKSPACE" });
     expect(keyToAction(ANSI.backspaceAlt)).toEqual({ type: "BACKSPACE" });
+  });
+
+  test("Regular characters should map to INPUT_CHAR action", () => {
+    expect(keyToAction("a")).toEqual({ type: "INPUT_CHAR", char: "a" });
+    expect(keyToAction("Z")).toEqual({ type: "INPUT_CHAR", char: "Z" });
+    expect(keyToAction("5")).toEqual({ type: "INPUT_CHAR", char: "5" });
   });
 });

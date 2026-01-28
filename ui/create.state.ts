@@ -324,6 +324,7 @@ export const keyToAction = (key: string): StateActions => {
     case ANSI.backspace:
     case ANSI.backspaceAlt:
       return { type: "BACKSPACE" };
+
     // HOME key- to move cursor to beginning of line
     case ANSI.home:
     case ANSI.homeAlt:
@@ -348,6 +349,8 @@ export const keyToAction = (key: string): StateActions => {
     case ANSI.optionRightAlt:
     case ANSI.ctrlRight:
       return { type: "WORD_RIGHT" };
+    case ANSI.space:
+      return { type: "SPACE" };
     default:
       return { type: "INPUT_CHAR", char: key };
   }

@@ -83,7 +83,11 @@ describe("search", () => {
         { type: "INPUT_CHAR", char: "notes" },
         MOCK_CONFIG,
       ).state;
-      state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
+      state = createReducer(
+        state,
+        { type: "INPUT_CHAR", char: " " },
+        MOCK_CONFIG,
+      ).state;
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "folder" },
@@ -247,20 +251,39 @@ describe("search", () => {
     });
 
     test("HOME keys should map to HOME", () => {
+      expect(keyToAction(ANSI.home)).toEqual({ type: "HOME" });
       expect(keyToAction(ANSI.homeAlt)).toEqual({ type: "HOME" });
+      expect(keyToAction(ANSI.home2)).toEqual({ type: "HOME" });
+      expect(keyToAction(ANSI.cmdLeft)).toEqual({ type: "HOME" });
       expect(keyToAction(ANSI.ctrlA)).toEqual({ type: "HOME" });
     });
 
     test("END keys should map to END", () => {
       expect(keyToAction(ANSI.end)).toEqual({ type: "END" });
+      expect(keyToAction(ANSI.endAlt)).toEqual({ type: "END" });
+      expect(keyToAction(ANSI.end2)).toEqual({ type: "END" });
+      expect(keyToAction(ANSI.cmdRight)).toEqual({ type: "END" });
       expect(keyToAction(ANSI.ctrlE)).toEqual({ type: "END" });
     });
 
     test("Word navigation keys should map correctly", () => {
       expect(keyToAction(ANSI.optionLeft)).toEqual({ type: "WORD_LEFT" });
+      expect(keyToAction(ANSI.optionLeftAlt)).toEqual({ type: "WORD_LEFT" });
       expect(keyToAction(ANSI.optionRight)).toEqual({ type: "WORD_RIGHT" });
+      expect(keyToAction(ANSI.optionRightAlt)).toEqual({ type: "WORD_RIGHT" });
       expect(keyToAction(ANSI.ctrlLeft)).toEqual({ type: "WORD_LEFT" });
       expect(keyToAction(ANSI.ctrlRight)).toEqual({ type: "WORD_RIGHT" });
+    });
+
+    test("Ctrl+D should map to DELETE_ITEM", () => {
+      expect(keyToAction(ANSI.ctrlD)).toEqual({ type: "DELETE_ITEM" });
+    });
+
+    test("Space should map to INPUT_CHAR", () => {
+      expect(keyToAction(ANSI.space)).toEqual({
+        type: "INPUT_CHAR",
+        char: " ",
+      });
     });
 
     test("Regular characters should map to INPUT_CHAR", () => {
