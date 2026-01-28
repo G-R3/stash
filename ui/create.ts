@@ -1,4 +1,6 @@
-import { State, ANSI, Config } from "../types";
+import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
+import { join } from "path";
+import { ANSI, type Config, type State } from "../types";
 import {
   cleanUp,
   clearScreen,
@@ -8,8 +10,6 @@ import {
   write,
   writeLine,
 } from "../utils";
-import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
-import { join } from "path";
 import { createInitialState, createReducer, keyToAction } from "./create.state";
 
 /**
@@ -40,7 +40,7 @@ export function createUI(config: Config) {
         writeLine(
           style(createResult.message, [
             createResult.success ? ANSI.green : ANSI.red,
-          ])
+          ]),
         );
 
         process.exit(createResult.success ? 0 : 1);
@@ -111,12 +111,12 @@ function render(state: State, error?: string) {
     style("Name: ", [
       ANSI.bold,
       state.focusedField === 0 ? ANSI.green : ANSI.dim,
-    ])
+    ]),
   );
   writeLine(
     style(state.text || (state.focusedField !== 0 ? "(empty)" : ""), [
       state.focusedField === 0 ? ANSI.reset : ANSI.dim,
-    ])
+    ]),
   );
 
   writeLine();
@@ -126,12 +126,12 @@ function render(state: State, error?: string) {
       ? style("[ ] Directory ", [ANSI.dim]) +
           style(
             "[●] File",
-            state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
+            state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim],
           )
       : style(
           "[●] Directory ",
-          state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
-        ) + style("[ ] File", [ANSI.dim])
+          state.focusedField === 1 ? [ANSI.bold, ANSI.green] : [ANSI.dim],
+        ) + style("[ ] File", [ANSI.dim]),
   );
 
   writeLine();
@@ -139,8 +139,8 @@ function render(state: State, error?: string) {
   writeLine(
     style(
       state.prefix ? "[●] Prefix" : "[ ] Prefix",
-      state.focusedField === 2 ? [ANSI.bold, ANSI.green] : [ANSI.dim]
-    )
+      state.focusedField === 2 ? [ANSI.bold, ANSI.green] : [ANSI.dim],
+    ),
   );
 
   writeLine();
@@ -163,8 +163,8 @@ function render(state: State, error?: string) {
   writeLine(
     style(
       "⏎ create | esc cancel | tab to focus field | space to toggle fields",
-      [ANSI.dim]
-    )
+      [ANSI.dim],
+    ),
   );
 
   const cursorCol = "Name: ".length + 1;

@@ -1,5 +1,14 @@
-import { ANSI, State } from "../types";
-import { deleteBack, insertChar, moveLeft, moveRight, moveToEnd, moveToStart, moveWordLeft, moveWordRight } from "./text-field";
+import { ANSI, type State } from "../types";
+import {
+  deleteBack,
+  insertChar,
+  moveLeft,
+  moveRight,
+  moveToEnd,
+  moveToStart,
+  moveWordLeft,
+  moveWordRight,
+} from "./text-field";
 
 export const createInitialState = (): State => ({
   text: "",
@@ -31,7 +40,7 @@ export type ReducerResult = { done: boolean; state: State; error?: string };
 
 export const createReducer = (
   state: State,
-  action: StateActions
+  action: StateActions,
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
@@ -39,7 +48,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {text, cursorPosition} = insertChar({text: state.text, cursorPosition:state.cursorPosition}, action.char);
+      const { text, cursorPosition } = insertChar(
+        { text: state.text, cursorPosition: state.cursorPosition },
+        action.char,
+      );
 
       return {
         done: false,
@@ -65,9 +77,10 @@ export const createReducer = (
           return { done: false, state };
         }
 
-        const {cursorPosition} = moveLeft({text: state.text, cursorPosition:state.cursorPosition});
-
-      
+        const { cursorPosition } = moveLeft({
+          text: state.text,
+          cursorPosition: state.cursorPosition,
+        });
 
         return {
           done: false,
@@ -98,9 +111,10 @@ export const createReducer = (
           return { done: false, state };
         }
 
-
-        const {cursorPosition} = moveRight({text: state.text, cursorPosition:state.cursorPosition});
-
+        const { cursorPosition } = moveRight({
+          text: state.text,
+          cursorPosition: state.cursorPosition,
+        });
 
         return {
           done: false,
@@ -148,7 +162,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveToStart({text: state.text, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveToStart({
+        text: state.text,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -163,7 +180,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveToEnd({text: state.text, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveToEnd({
+        text: state.text,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -178,7 +198,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveWordLeft({text: state.text, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveWordLeft({
+        text: state.text,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -193,7 +216,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveWordRight({text: state.text, cursorPosition: state.cursorPosition});
+      const { cursorPosition } = moveWordRight({
+        text: state.text,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -208,8 +234,11 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {text, cursorPosition} = deleteBack({text: state.text, cursorPosition: state.cursorPosition})
-     
+      const { text, cursorPosition } = deleteBack({
+        text: state.text,
+        cursorPosition: state.cursorPosition,
+      });
+
       return {
         done: false,
         state: {
@@ -221,7 +250,10 @@ export const createReducer = (
     }
     case "SPACE": {
       if (state.focusedField === 0) {
-        const {text, cursorPosition} = insertChar({text: state.text, cursorPosition: state.cursorPosition}, " ")
+        const { text, cursorPosition } = insertChar(
+          { text: state.text, cursorPosition: state.cursorPosition },
+          " ",
+        );
 
         return {
           done: false,

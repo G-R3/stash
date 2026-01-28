@@ -1,13 +1,13 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { existsSync, mkdirSync, rmSync } from "fs";
+import { join } from "path";
+import { ANSI, type Config } from "../types";
+import { createItem } from "../ui/create";
 import {
   createInitialState,
   createReducer,
   keyToAction,
 } from "../ui/create.state";
-import { createItem } from "../ui/create";
-import { existsSync, rmSync, mkdirSync } from "fs";
-import { join } from "path";
-import { ANSI, Config } from "../types";
 
 const MOCK_CONFIG: Config = {
   stashDir: join(import.meta.dir, ".test-tmp"),

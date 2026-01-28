@@ -1,12 +1,12 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { mkdirSync, rmSync, writeFileSync } from "fs";
+import { join } from "path";
+import { ANSI, type Config } from "../types";
 import {
   createInitialState,
   createReducer,
   keyToAction,
 } from "../ui/search.state";
-import { Config, ANSI } from "../types";
-import { join } from "path";
-import { mkdirSync, writeFileSync, rmSync } from "fs";
 import { getStashItems } from "../utils";
 
 const MOCK_CONFIG: Config = {
@@ -57,12 +57,12 @@ describe("search", () => {
       const result = createReducer(
         state,
         { type: "INPUT_CHAR", char: "test" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       );
       expect(result.state.items).toEqual(
         getStashItems(MOCK_CONFIG).filter((item) =>
-          item.name.toLowerCase().includes("test")
-        )
+          item.name.toLowerCase().includes("test"),
+        ),
       );
     });
 
@@ -71,7 +71,7 @@ describe("search", () => {
       const result = createReducer(
         state,
         { type: "INPUT_CHAR", char: "zzzznotfound" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       );
       expect(result.state.items).toHaveLength(0);
     });
@@ -81,19 +81,19 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "notes" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
       state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "folder" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       expect(state.items).toEqual(
         getStashItems(MOCK_CONFIG).filter((item) =>
-          item.name.toLowerCase().includes("notes folder")
-        )
+          item.name.toLowerCase().includes("notes folder"),
+        ),
       );
     });
 
@@ -102,7 +102,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "ac" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state;
@@ -110,7 +110,7 @@ describe("search", () => {
       const result = createReducer(
         state,
         { type: "INPUT_CHAR", char: "b" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       );
 
       expect(result.state.query).toBe("abc");
@@ -123,7 +123,7 @@ describe("search", () => {
       const result = createReducer(
         state,
         { type: "INPUT_CHAR", char: "x" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       );
       expect(result.state.selectedIndex).toBe(0);
     });
@@ -135,7 +135,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
       const result = createReducer(state, { type: "BACKSPACE" }, MOCK_CONFIG);
 
@@ -157,7 +157,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state; // cursor at index 1
@@ -175,7 +175,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "ab" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state;
@@ -193,7 +193,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       const result = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG);
@@ -213,7 +213,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
@@ -228,7 +228,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "ab" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       const result = createReducer(state, { type: "ARROW_RIGHT" }, MOCK_CONFIG);
@@ -241,7 +241,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
       const result = createReducer(state, { type: "HOME" }, MOCK_CONFIG);
 
@@ -253,7 +253,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
       state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
       const result = createReducer(state, { type: "END" }, MOCK_CONFIG);
@@ -268,7 +268,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
@@ -276,7 +276,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "world" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       const result = createReducer(state, { type: "WORD_LEFT" }, MOCK_CONFIG);
@@ -290,7 +290,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
@@ -298,7 +298,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "world" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
@@ -370,7 +370,7 @@ describe("search", () => {
       state = createReducer(
         state,
         { type: "INPUT_CHAR", char: "test" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
       state = { ...state, selectedIndex: 2 };
       const result = createReducer(state, { type: "CANCEL" }, MOCK_CONFIG);
@@ -389,7 +389,7 @@ describe("search", () => {
       const state = createReducer(
         initialState,
         { type: "ARROW_DOWN" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
@@ -404,7 +404,7 @@ describe("search", () => {
       const state = createReducer(
         initialState,
         { type: "INPUT_CHAR", char: "zzzznotfound" },
-        MOCK_CONFIG
+        MOCK_CONFIG,
       ).state;
 
       // attemp to delete

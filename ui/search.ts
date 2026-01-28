@@ -1,4 +1,4 @@
-import { ANSI, Config, SearchState, StashItem } from "../types";
+import { ANSI, type Config, type SearchState, StashItem } from "../types";
 import {
   cleanUp,
   clearScreen,
@@ -11,8 +11,7 @@ import {
   write,
   writeLine,
 } from "../utils";
-import { createInitialState, createReducer } from "./search.state";
-import { keyToAction } from "./search.state";
+import { createInitialState, createReducer, keyToAction } from "./search.state";
 
 const iconMap = {
   directory: "📁",
@@ -68,7 +67,7 @@ function render(state: SearchState) {
     const suffix = isDirectory(item.path) ? `/` : "";
     const paddedName = padEnd(
       iconMap[item.type] + " " + item.name + suffix,
-      Math.min(cols - 4, 30)
+      Math.min(cols - 4, 30),
     );
 
     const time = relativeTime(item.mtime);

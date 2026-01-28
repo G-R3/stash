@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 import { parseArgs } from "util";
-import { Commands } from "./types";
-import { getStashDir, showHelpMessage } from "./utils";
-import { createUI } from "./ui/create";
 import { config } from "./config";
+import { Commands } from "./types";
+import { createUI } from "./ui/create";
 import { searchUI } from "./ui/search";
+import { getStashDir, showHelpMessage } from "./utils";
 
 async function main() {
   const { values: flags, positionals } = parseArgs({

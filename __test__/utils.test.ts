@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { style } from "../utils";
 import { ANSI } from "../types";
+import { style } from "../utils";
 
 describe("style", () => {
   test("applies single style", () => {

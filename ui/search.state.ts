@@ -1,19 +1,27 @@
-import { ANSI, Config, SearchState } from "../types";
-import { getStashItems } from "../utils";
 import { rmSync } from "fs";
-import { deleteBack, insertChar, moveLeft, moveRight, moveToEnd, moveToStart, moveWordLeft, moveWordRight } from "./text-field";
-
+import { ANSI, type Config, type SearchState } from "../types";
+import { getStashItems } from "../utils";
+import {
+  deleteBack,
+  insertChar,
+  moveLeft,
+  moveRight,
+  moveToEnd,
+  moveToStart,
+  moveWordLeft,
+  moveWordRight,
+} from "./text-field";
 
 const filterItems = (query: string, config: Config) =>
   getStashItems(config).filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase())
+    item.name.toLowerCase().includes(query.toLowerCase()),
   );
 
 const updateQueryAndItems = (
   state: SearchState,
   newQuery: string,
   newCursorPosition: number,
-  config: Config
+  config: Config,
 ): ReducerResult => {
   return {
     done: false,
@@ -59,12 +67,14 @@ export const createInitialState = (config: Config): SearchState => ({
 export const createReducer = (
   state: SearchState,
   action: StateActions,
-  config: Config
+  config: Config,
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
-
-      const {text, cursorPosition} = insertChar({text: state.query, cursorPosition: state.cursorPosition}, action.char);
+      const { text, cursorPosition } = insertChar(
+        { text: state.query, cursorPosition: state.cursorPosition },
+        action.char,
+      );
 
       return updateQueryAndItems(state, text, cursorPosition, config);
     }
@@ -82,7 +92,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveLeft({text: state.query, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveLeft({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -97,8 +110,10 @@ export const createReducer = (
         return { done: false, state };
       }
 
-      const {cursorPosition} = moveRight({text: state.query, cursorPosition: state.cursorPosition})
-
+      const { cursorPosition } = moveRight({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -124,14 +139,16 @@ export const createReducer = (
           ...state,
           selectedIndex: Math.min(
             state.items.length - 1,
-            state.selectedIndex + 1
+            state.selectedIndex + 1,
           ),
         },
       };
     }
     case "HOME": {
-
-      const {cursorPosition} = moveToStart({text: state.query, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveToStart({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -142,9 +159,11 @@ export const createReducer = (
       };
     }
     case "END": {
-      const {cursorPosition} = moveToEnd({text: state.query, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveToEnd({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
-      
       return {
         done: false,
         state: {
@@ -154,7 +173,10 @@ export const createReducer = (
       };
     }
     case "WORD_LEFT": {
-      const {cursorPosition} = moveWordLeft({text: state.query, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveWordLeft({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -165,8 +187,10 @@ export const createReducer = (
       };
     }
     case "WORD_RIGHT": {
-
-      const {cursorPosition} = moveWordRight({text: state.query, cursorPosition: state.cursorPosition})
+      const { cursorPosition } = moveWordRight({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
       return {
         done: false,
@@ -184,29 +208,20 @@ export const createReducer = (
         };
       }
 
-      const {text, cursorPosition} = deleteBack({text: state.query, cursorPosition: state.cursorPosition})
+      const { text, cursorPosition } = deleteBack({
+        text: state.query,
+        cursorPosition: state.cursorPosition,
+      });
 
-
-      
-      return updateQueryAndItems(
-        state,
-        text,
-        cursorPosition,
-        config
-      );
+      return updateQueryAndItems(state, text, cursorPosition, config);
     }
     case "SPACE": {
-
-      const {text, cursorPosition} = insertChar({text: state.query, cursorPosition: state.cursorPosition}, " ")
-
-    
-
-      return updateQueryAndItems(
-        state,
-        text,
-        cursorPosition,
-        config
+      const { text, cursorPosition } = insertChar(
+        { text: state.query, cursorPosition: state.cursorPosition },
+        " ",
       );
+
+      return updateQueryAndItems(state, text, cursorPosition, config);
     }
     case "DELETE_ITEM": {
       const itemToDelete = state.items[state.selectedIndex];
