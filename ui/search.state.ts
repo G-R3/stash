@@ -1,32 +1,8 @@
 import { ANSI, Config, SearchState } from "../types";
 import { getStashItems } from "../utils";
 import { rmSync } from "fs";
+import { deleteBack, insertChar, moveLeft, moveRight, moveToEnd, moveToStart, moveWordLeft, moveWordRight } from "./text-field";
 
-// Find the start of the previous word from cursor position
-const findPrevWordBoundary = (text: string, pos: number): number => {
-  if (pos === 0) return 0;
-
-  let i = pos - 1;
-  // Skip any spaces before cursor
-  while (i > 0 && text[i] === " ") i--;
-  // Move back until we hit a space or start
-  while (i > 0 && text[i - 1] !== " ") i--;
-
-  return i;
-};
-
-// Find the end of the next word from cursor position
-const findNextWordBoundary = (text: string, pos: number): number => {
-  if (pos >= text.length) return text.length;
-
-  let i = pos;
-  // Skip current word characters
-  while (i < text.length && text[i] !== " ") i++;
-  // Skip any spaces after word
-  while (i < text.length && text[i] === " ") i++;
-
-  return i;
-};
 
 const filterItems = (query: string, config: Config) =>
   getStashItems(config).filter((item) =>
@@ -87,14 +63,10 @@ export const createReducer = (
 ): ReducerResult => {
   switch (action.type) {
     case "INPUT_CHAR": {
-      const newQuery =
-        state.query.slice(0, state.cursorPosition) +
-        action.char +
-        state.query.slice(state.cursorPosition);
 
-      const newCursorPosition = state.cursorPosition + action.char.length;
+      const {text, cursorPosition} = insertChar({text: state.query, cursorPosition: state.cursorPosition}, action.char);
 
-      return updateQueryAndItems(state, newQuery, newCursorPosition, config);
+      return updateQueryAndItems(state, text, cursorPosition, config);
     }
     case "TAB": {
       return {
@@ -110,11 +82,13 @@ export const createReducer = (
         return { done: false, state };
       }
 
+      const {cursorPosition} = moveLeft({text: state.query, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: state.cursorPosition - 1,
+          cursorPosition,
         },
       };
     }
@@ -123,11 +97,14 @@ export const createReducer = (
         return { done: false, state };
       }
 
+      const {cursorPosition} = moveRight({text: state.query, cursorPosition: state.cursorPosition})
+
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: state.cursorPosition + 1,
+          cursorPosition,
         },
       };
     }
@@ -153,44 +130,49 @@ export const createReducer = (
       };
     }
     case "HOME": {
+
+      const {cursorPosition} = moveToStart({text: state.query, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: 0,
+          cursorPosition,
         },
       };
     }
     case "END": {
+      const {cursorPosition} = moveToEnd({text: state.query, cursorPosition: state.cursorPosition})
+
+      
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: state.query.length,
+          cursorPosition,
         },
       };
     }
     case "WORD_LEFT": {
+      const {cursorPosition} = moveWordLeft({text: state.query, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: findPrevWordBoundary(
-            state.query,
-            state.cursorPosition
-          ),
+          cursorPosition,
         },
       };
     }
     case "WORD_RIGHT": {
+
+      const {cursorPosition} = moveWordRight({text: state.query, cursorPosition: state.cursorPosition})
+
       return {
         done: false,
         state: {
           ...state,
-          cursorPosition: findNextWordBoundary(
-            state.query,
-            state.cursorPosition
-          ),
+          cursorPosition,
         },
       };
     }
@@ -202,27 +184,27 @@ export const createReducer = (
         };
       }
 
-      const newQuery =
-        state.query.slice(0, state.cursorPosition - 1) +
-        state.query.slice(state.cursorPosition);
+      const {text, cursorPosition} = deleteBack({text: state.query, cursorPosition: state.cursorPosition})
 
+
+      
       return updateQueryAndItems(
         state,
-        newQuery,
-        state.cursorPosition - 1,
+        text,
+        cursorPosition,
         config
       );
     }
     case "SPACE": {
-      const newQuery =
-        state.query.slice(0, state.cursorPosition) +
-        " " +
-        state.query.slice(state.cursorPosition);
+
+      const {text, cursorPosition} = insertChar({text: state.query, cursorPosition: state.cursorPosition}, " ")
+
+    
 
       return updateQueryAndItems(
         state,
-        newQuery,
-        state.cursorPosition + 1,
+        text,
+        cursorPosition,
         config
       );
     }
@@ -270,8 +252,6 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "ARROW_UP" };
     case ANSI.arrowDown:
       return { type: "ARROW_DOWN" };
-    case ANSI.space:
-      return { type: "SPACE" };
     case ANSI.backspace:
     case ANSI.backspaceAlt:
       return { type: "BACKSPACE" };
