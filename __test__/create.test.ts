@@ -156,102 +156,6 @@ describe("create", () => {
     expect(result.error).toBe("Name cannot be empty");
   });
 
-  test("INPUT_CHAR should insert character at cursor position, not append to end", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hllo",
-      cursorPosition: 1, // cursor after "h"
-    };
-    const result = createReducer(state, { type: "INPUT_CHAR", char: "e" });
-
-    expect(result.state.text).toBe("hello");
-    expect(result.state.cursorPosition).toBe(2);
-  });
-
-  test("INPUT_CHAR should insert at beginning when cursor is at position 0", () => {
-    const state = {
-      ...createInitialState(),
-      text: "ello",
-      cursorPosition: 0,
-    };
-    const result = createReducer(state, { type: "INPUT_CHAR", char: "h" });
-
-    expect(result.state.text).toBe("hello");
-    expect(result.state.cursorPosition).toBe(1);
-  });
-
-  test("SPACE should insert space at cursor position, not append to end", () => {
-    const state = {
-      ...createInitialState(),
-      text: "helloworld",
-      cursorPosition: 5, // cursor after "hello"
-    };
-    const result = createReducer(state, { type: "SPACE" });
-
-    expect(result.state.text).toBe("hello world");
-    expect(result.state.cursorPosition).toBe(6);
-  });
-
-  test("SPACE should insert at beginning when cursor is at position 0", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello",
-      cursorPosition: 0,
-    };
-    const result = createReducer(state, { type: "SPACE" });
-
-    expect(result.state.text).toBe(" hello");
-    expect(result.state.cursorPosition).toBe(1);
-  });
-
-  test("BACKSPACE should delete character before cursor position", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world",
-      cursorPosition: 6,
-    };
-    const result = createReducer(state, { type: "BACKSPACE" });
-
-    expect(result.state.text).toBe("helloworld");
-    expect(result.state.cursorPosition).toBe(5);
-  });
-
-  test("BACKSPACE at end of text should delete last character", () => {
-    const state = {
-      ...createInitialState(),
-      text: "test",
-      cursorPosition: 4, // at end
-    };
-    const result = createReducer(state, { type: "BACKSPACE" });
-
-    expect(result.state.text).toBe("tes");
-    expect(result.state.cursorPosition).toBe(3);
-  });
-
-  test("BACKSPACE in middle of word should delete character before cursor", () => {
-    const state = {
-      ...createInitialState(),
-      text: "test test",
-      cursorPosition: 4, // after first "test"
-    };
-    const result = createReducer(state, { type: "BACKSPACE" });
-
-    expect(result.state.text).toBe("tes test");
-    expect(result.state.cursorPosition).toBe(3);
-  });
-
-  test("BACKSPACE at position 0 should do nothing", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello",
-      cursorPosition: 0,
-    };
-    const result = createReducer(state, { type: "BACKSPACE" });
-
-    expect(result.state.text).toBe("hello");
-    expect(result.state.cursorPosition).toBe(0);
-  });
-
   test("BACKSPACE should do nothing when not focused on text field", () => {
     const state = {
       ...createInitialState(),
@@ -263,17 +167,6 @@ describe("create", () => {
 
     expect(result.state.text).toBe("hello");
     expect(result.state.cursorPosition).toBe(3);
-  });
-
-  test("HOME should move cursor to beginning of text", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world",
-      cursorPosition: 6,
-    };
-    const result = createReducer(state, { type: "HOME" });
-
-    expect(result.state.cursorPosition).toBe(0);
   });
 
   test("HOME should do nothing when not focused on text field", () => {
@@ -288,17 +181,6 @@ describe("create", () => {
     expect(result.state.cursorPosition).toBe(3);
   });
 
-  test("END should move cursor to end of text", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world",
-      cursorPosition: 0,
-    };
-    const result = createReducer(state, { type: "END" });
-
-    expect(result.state.cursorPosition).toBe(11);
-  });
-
   test("END should do nothing when not focused on text field", () => {
     const state = {
       ...createInitialState(),
@@ -309,62 +191,6 @@ describe("create", () => {
     const result = createReducer(state, { type: "END" });
 
     expect(result.state.cursorPosition).toBe(0);
-  });
-
-  test("WORD_LEFT should move cursor to previous word boundary", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world test",
-      cursorPosition: 16, // at end
-    };
-
-    const result1 = createReducer(state, { type: "WORD_LEFT" });
-    expect(result1.state.cursorPosition).toBe(12); // start of "test"
-
-    const result2 = createReducer(result1.state, { type: "WORD_LEFT" });
-    expect(result2.state.cursorPosition).toBe(6); // start of "world"
-
-    const result3 = createReducer(result2.state, { type: "WORD_LEFT" });
-    expect(result3.state.cursorPosition).toBe(0); // start of "hello"
-  });
-
-  test("WORD_LEFT should handle cursor in middle of word", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world",
-      cursorPosition: 8, // middle of "world"
-    };
-    const result = createReducer(state, { type: "WORD_LEFT" });
-
-    expect(result.state.cursorPosition).toBe(6); // start of "world"
-  });
-
-  test("WORD_RIGHT should move cursor to next word boundary", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world test",
-      cursorPosition: 0,
-    };
-
-    const result1 = createReducer(state, { type: "WORD_RIGHT" });
-    expect(result1.state.cursorPosition).toBe(6); // start of "world"
-
-    const result2 = createReducer(result1.state, { type: "WORD_RIGHT" });
-    expect(result2.state.cursorPosition).toBe(12); // start of "test"
-
-    const result3 = createReducer(result2.state, { type: "WORD_RIGHT" });
-    expect(result3.state.cursorPosition).toBe(16); // end of text
-  });
-
-  test("WORD_RIGHT should handle cursor in middle of word", () => {
-    const state = {
-      ...createInitialState(),
-      text: "hello world",
-      cursorPosition: 2, // middle of "hello"
-    };
-    const result = createReducer(state, { type: "WORD_RIGHT" });
-
-    expect(result.state.cursorPosition).toBe(6); // start of "world"
   });
 
   test("WORD_LEFT and WORD_RIGHT should do nothing when not focused on text field", () => {

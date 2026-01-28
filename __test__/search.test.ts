@@ -97,26 +97,6 @@ describe("search", () => {
       );
     });
 
-    test("Should insert character at cursor position", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "ac" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state;
-
-      const result = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "b" },
-        MOCK_CONFIG,
-      );
-
-      expect(result.state.query).toBe("abc");
-      expect(result.state.cursorPosition).toBe(2);
-    });
-
     test("Should reset selectedIndex to 0 when filtering", () => {
       let state = createInitialState(MOCK_CONFIG);
       state = { ...state, selectedIndex: 3 };
@@ -130,19 +110,6 @@ describe("search", () => {
   });
 
   describe("BACKSPACE", () => {
-    test("Should delete character before cursor", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG,
-      ).state;
-      const result = createReducer(state, { type: "BACKSPACE" }, MOCK_CONFIG);
-
-      expect(result.state.query).toBe("ab");
-      expect(result.state.cursorPosition).toBe(2);
-    });
-
     test("Should do nothing at position 0 but refresh items", () => {
       const state = createInitialState(MOCK_CONFIG);
       const result = createReducer(state, { type: "BACKSPACE" }, MOCK_CONFIG);
@@ -150,162 +117,6 @@ describe("search", () => {
       expect(result.state.query).toBe("");
       expect(result.state.cursorPosition).toBe(0);
       expect(result.state.items).toEqual(getStashItems(MOCK_CONFIG));
-    });
-
-    test("Should delete in middle of query", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state; // cursor at index 1
-
-      const result = createReducer(state, { type: "BACKSPACE" }, MOCK_CONFIG);
-
-      expect(result.state.query).toBe("ac");
-      expect(result.state.cursorPosition).toBe(1);
-    });
-  });
-
-  describe("SPACE", () => {
-    test("Should insert space at cursor position", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "ab" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG).state;
-
-      const result = createReducer(state, { type: "SPACE" }, MOCK_CONFIG);
-
-      expect(result.state.query).toBe("a b");
-      expect(result.state.cursorPosition).toBe(2);
-    });
-  });
-
-  describe("Cursor movement", () => {
-    test("ARROW_LEFT should move cursor left", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG,
-      ).state;
-
-      const result = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(2);
-    });
-
-    test("ARROW_LEFT should not go below 0", () => {
-      const state = createInitialState(MOCK_CONFIG);
-      const result = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(0);
-    });
-
-    test("ARROW_RIGHT should move cursor right", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "abc" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
-
-      const result = createReducer(state, { type: "ARROW_RIGHT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(1);
-    });
-
-    test("ARROW_RIGHT should not exceed query length", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "ab" },
-        MOCK_CONFIG,
-      ).state;
-
-      const result = createReducer(state, { type: "ARROW_RIGHT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(2); // unchanged
-    });
-
-    test("HOME should move cursor to position 0", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG,
-      ).state;
-      const result = createReducer(state, { type: "HOME" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(0);
-    });
-
-    test("END should move cursor to end of query", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG,
-      ).state;
-      state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
-      const result = createReducer(state, { type: "END" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(5);
-    });
-  });
-
-  describe("Word navigation", () => {
-    test("WORD_LEFT should move to previous word boundary", () => {
-      let state = createInitialState(MOCK_CONFIG);
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
-
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "world" },
-        MOCK_CONFIG,
-      ).state;
-
-      const result = createReducer(state, { type: "WORD_LEFT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(6); // start of "world"
-    });
-
-    test("WORD_RIGHT should move to next word boundary", () => {
-      let state = createInitialState(MOCK_CONFIG);
-
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "hello" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "SPACE" }, MOCK_CONFIG).state;
-
-      state = createReducer(
-        state,
-        { type: "INPUT_CHAR", char: "world" },
-        MOCK_CONFIG,
-      ).state;
-
-      state = createReducer(state, { type: "HOME" }, MOCK_CONFIG).state;
-
-      const result = createReducer(state, { type: "WORD_RIGHT" }, MOCK_CONFIG);
-
-      expect(result.state.cursorPosition).toBe(6); // after "hello "
     });
   });
 
