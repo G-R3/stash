@@ -7,6 +7,8 @@ import { searchUI } from "./ui/search";
 import { getStashDir, showHelpMessage } from "./utils";
 
 async function main() {
+  getStashDir(config);
+
   const { values: flags, positionals } = parseArgs({
     args: Bun.argv,
     options: {
@@ -28,9 +30,6 @@ async function main() {
         showHelpMessage(command);
         process.exit(0);
       }
-      // Moving this here as a temp fix for cli.test.ts creating
-      // a .stash` directory in the root.
-      getStashDir(config);
 
       createUI(config);
       break;
