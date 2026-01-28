@@ -222,6 +222,7 @@ export const createReducer = (
     case "SPACE": {
       if (state.focusedField === 0) {
         const {text, cursorPosition} = insertChar({text: state.text, cursorPosition: state.cursorPosition}, " ")
+
         return {
           done: false,
           state: {
@@ -288,8 +289,6 @@ export const keyToAction = (key: string): StateActions => {
       return { type: "ARROW_UP" };
     case ANSI.arrowDown:
       return { type: "ARROW_DOWN" };
-    case ANSI.space:
-      return { type: "SPACE" };
     case ANSI.backspace:
     case ANSI.backspaceAlt:
       return { type: "BACKSPACE" };
