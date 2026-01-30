@@ -47,15 +47,4 @@ async function main() {
   }
 }
 
-/**
- * Handles rendering the search/list TUI.
- * Will render a searchable list of all available files/directories
- */
-function searchList(command?: string) {
-  console.log("Searching and listing files/directories");
-  if (command) {
-    console.log("command", command);
-  }
-}
-
 main();
