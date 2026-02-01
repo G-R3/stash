@@ -4,7 +4,7 @@ import { config } from "./config";
 import { Commands } from "./types";
 import { createUI } from "./ui/create";
 import { searchUI } from "./ui/search";
-import { getStashDir, showHelpMessage } from "./utils";
+import { getStashDir, isStashEmpty, showHelpMessage } from "./utils";
 
 async function main() {
   getStashDir(config);
@@ -22,12 +22,12 @@ async function main() {
     allowPositionals: true,
   });
 
-  const command = positionals[2];
+  const arg = positionals[2];
 
-  switch (command) {
+  switch (arg) {
     case Commands.CREATE:
       if (flags.help) {
-        showHelpMessage(command);
+        showHelpMessage(arg);
         process.exit(0);
       }
 
@@ -35,14 +35,12 @@ async function main() {
       break;
     default:
       if (flags.help) {
-        showHelpMessage(command);
+        showHelpMessage(arg);
         process.exit(0);
       }
-      if (command) {
-        searchUI(config, command);
-        break;
-      }
-      searchUI(config);
+
+      isStashEmpty(config) ? createUI(config) : searchUI(config, arg);
+
       break;
   }
 }

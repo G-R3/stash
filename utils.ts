@@ -79,6 +79,12 @@ export function getStashDir(config: Config) {
   return config.stashDir;
 }
 
+export function isStashEmpty(config: Config) {
+  const stash = getStashItems(config);
+
+  return stash.length === 0;
+}
+
 export function getTerminalSize() {
   return {
     rows: process.stdout.rows || process.stderr.rows || 24,
