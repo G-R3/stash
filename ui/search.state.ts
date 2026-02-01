@@ -56,12 +56,30 @@ export type ReducerResult = {
   error?: string;
 };
 
-export const createInitialState = (config: Config): SearchState => ({
-  query: "",
-  cursorPosition: 0,
-  selectedIndex: 0,
-  items: getStashItems(config),
-});
+export const createInitialState = (
+  config: Config,
+  arg: string = "",
+): SearchState => {
+  const items = getStashItems(config);
+
+  if (arg) {
+    return {
+      query: arg,
+      cursorPosition: arg.length,
+      selectedIndex: 0,
+      items: items.filter((item) =>
+        item.name.toLowerCase().includes(arg.toLowerCase()),
+      ),
+    };
+  }
+
+  return {
+    query: "",
+    cursorPosition: 0,
+    selectedIndex: 0,
+    items,
+  };
+};
 
 export const createReducer = (
   state: SearchState,

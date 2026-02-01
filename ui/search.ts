@@ -18,10 +18,10 @@ const iconMap = {
   file: "📄",
 };
 
-export function searchUI(config: Config, command?: string) {
+export function searchUI(config: Config, arg?: string) {
   clearScreen();
 
-  let state = createInitialState(config);
+  let state = createInitialState(config, arg);
 
   process.stdin.on("data", (data) => {
     const key = data.toString();
@@ -39,6 +39,7 @@ export function searchUI(config: Config, command?: string) {
     }
 
     state = result.state;
+
     render(result.state);
   });
 

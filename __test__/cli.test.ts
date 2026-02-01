@@ -16,4 +16,8 @@ describe("CLI", () => {
   test.skip("Should create stash directory if it doesn't exist", async () => {
     // TODO: Implement this test
   });
+
+  test.skip("can call search with initial query arg - stash <query_to_search>", async () => {
+    // TODO: implement
+  });
 });
