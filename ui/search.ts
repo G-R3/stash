@@ -11,6 +11,7 @@ import {
   write,
   writeLine,
 } from "../utils";
+import { createUI } from "./create";
 import { createInitialState, createReducer, keyToAction } from "./search.state";
 
 const iconMap = {
@@ -35,6 +36,12 @@ export function searchUI(config: Config, arg?: string) {
     if (result.done) {
       clearScreen();
       cleanUp();
+
+      if (result.createNew) {
+        createUI(config, result.state.query);
+        return;
+      }
+
       process.exit(0);
     }
 
@@ -78,6 +85,18 @@ function render(state: SearchState) {
 
     writeLine(isSelected ? style(line, [ANSI.inverse]) : line);
   });
+
+  writeLine();
+
+  const createLabel = state.query
+    ? `+ create new "${state.query}"`
+    : "+ create new item";
+  const isCreateSelected = state.selectedIndex === items.length;
+  writeLine(
+    isCreateSelected
+      ? style(createLabel, [ANSI.inverse])
+      : style(createLabel, [ANSI.dim]),
+  );
 
   writeLine();
   writeLine(style("esc to cancel | ctrl+d to delete item", [ANSI.dim]));

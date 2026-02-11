@@ -17,8 +17,8 @@ import { createInitialState, createReducer, keyToAction } from "./create.state";
  * Can chose between creating a file or a directory and if file/directory should
  * be prefixed with the current date.
  **/
-export function createUI(config: Config) {
-  let state = createInitialState();
+export function createUI(config: Config, initialName?: string) {
+  let state = createInitialState(initialName);
 
   clearScreen();
 

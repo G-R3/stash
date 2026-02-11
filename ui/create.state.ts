@@ -10,12 +10,12 @@ import {
   moveWordRight,
 } from "./text-field";
 
-export const createInitialState = (): State => ({
-  text: "",
+export const createInitialState = (initialName?: string): State => ({
+  text: initialName ?? "",
   focusedField: 0,
   isFile: false,
   prefix: false,
-  cursorPosition: 0,
+  cursorPosition: initialName?.length ?? 0,
 });
 
 export type StateActions =

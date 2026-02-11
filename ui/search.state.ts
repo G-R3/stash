@@ -48,12 +48,14 @@ export type StateActions =
   | { type: "WORD_LEFT" }
   | { type: "WORD_RIGHT" }
   | { type: "BACKSPACE" }
-  | { type: "DELETE_ITEM" };
+  | { type: "DELETE_ITEM" }
+  | { type: "ENTER" };
 
 export type ReducerResult = {
   done: boolean;
   state: SearchState;
   error?: string;
+  createNew?: boolean;
 };
 
 export const createInitialState = (
@@ -96,11 +98,12 @@ export const createReducer = (
       return updateQueryAndItems(state, text, cursorPosition, config);
     }
     case "TAB": {
+      const totalOptions = state.items.length + 1; // +1 for "create new" option
       return {
         done: false,
         state: {
           ...state,
-          selectedIndex: (state.selectedIndex + 1) % state.items.length,
+          selectedIndex: (state.selectedIndex + 1) % totalOptions,
         },
       };
     }
@@ -150,14 +153,12 @@ export const createReducer = (
       };
     }
     case "ARROW_DOWN": {
+      const maxIndex = state.items.length; // items.length = the "create new" option index
       return {
         done: false,
         state: {
           ...state,
-          selectedIndex: Math.min(
-            state.items.length - 1,
-            state.selectedIndex + 1,
-          ),
+          selectedIndex: Math.min(maxIndex, state.selectedIndex + 1),
         },
       };
     }
@@ -252,6 +253,13 @@ export const createReducer = (
         },
       };
     }
+    case "ENTER": {
+      const isCreateOption = state.selectedIndex === state.items.length;
+      if (isCreateOption) {
+        return { done: true, state, createNew: true };
+      }
+      return { done: false, state };
+    }
     case "CANCEL": {
       return { done: true, state: createInitialState(config) };
     }
@@ -266,6 +274,8 @@ export const keyToAction = (key: string): StateActions => {
   switch (key) {
     case ANSI.escape:
       return { type: "CANCEL" };
+    case ANSI.enter:
+      return { type: "ENTER" };
     case ANSI.tab:
       return { type: "TAB" };
     case ANSI.arrowLeft:

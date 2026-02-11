@@ -22,6 +22,24 @@ describe("create", () => {
     rmSync(MOCK_CONFIG.stashDir, { recursive: true, force: true });
   });
 
+  test("Should initialize with provided name and cursor at end", () => {
+    const name = "my-note";
+    const state = createInitialState(name);
+
+    expect(state.text).toBe("my-note");
+    expect(state.cursorPosition).toBe(name.length);
+    expect(state.focusedField).toBe(0);
+    expect(state.isFile).toBe(false);
+    expect(state.prefix).toBe(false);
+  });
+
+  test("Should initialize with empty name when no argument is provided", () => {
+    const state = createInitialState();
+
+    expect(state.text).toBe("");
+    expect(state.cursorPosition).toBe(0);
+  });
+
   test("Should create a directory", () => {
     const state = { ...createInitialState(), text: "my-folder", isFile: false };
     const result = createItem(state, MOCK_CONFIG);

@@ -132,10 +132,10 @@ describe("search", () => {
       expect(result.state.selectedIndex).toBe(1);
     });
 
-    test("TAB should wrap around to 0", () => {
+    test("TAB should wrap around to 0 (including create new option)", () => {
       let state = createInitialState(MOCK_CONFIG);
-      const itemCount = state.items.length;
-      state = { ...state, selectedIndex: itemCount - 1 };
+      const totalOptions = state.items.length + 1; // +1 for "create new" option
+      state = { ...state, selectedIndex: totalOptions - 1 };
       const result = createReducer(state, { type: "TAB" }, MOCK_CONFIG);
 
       expect(result.state.selectedIndex).toBe(0);
@@ -148,12 +148,20 @@ describe("search", () => {
       expect(result.state.selectedIndex).toBe(1);
     });
 
-    test("ARROW_DOWN should not exceed items length", () => {
+    test("ARROW_DOWN should reach the create new option", () => {
       let state = createInitialState(MOCK_CONFIG);
       state = { ...state, selectedIndex: state.items.length - 1 };
       const result = createReducer(state, { type: "ARROW_DOWN" }, MOCK_CONFIG);
 
-      expect(result.state.selectedIndex).toBe(state.items.length - 1);
+      expect(result.state.selectedIndex).toBe(state.items.length);
+    });
+
+    test("ARROW_DOWN should not exceed create new option index", () => {
+      let state = createInitialState(MOCK_CONFIG);
+      state = { ...state, selectedIndex: state.items.length };
+      const result = createReducer(state, { type: "ARROW_DOWN" }, MOCK_CONFIG);
+
+      expect(result.state.selectedIndex).toBe(state.items.length);
     });
 
     test("ARROW_UP should decrease selectedIndex", () => {
@@ -169,6 +177,40 @@ describe("search", () => {
       const result = createReducer(state, { type: "ARROW_UP" }, MOCK_CONFIG);
 
       expect(result.state.selectedIndex).toBe(0);
+    });
+  });
+
+  describe("ENTER", () => {
+    test("Should trigger createNew when create option is selected", () => {
+      let state = createInitialState(MOCK_CONFIG);
+      state = { ...state, selectedIndex: state.items.length };
+      const result = createReducer(state, { type: "ENTER" }, MOCK_CONFIG);
+
+      expect(result.done).toBe(true);
+      expect(result.createNew).toBe(true);
+    });
+
+    test("Should preserve query in state when creating new item", () => {
+      let state = createInitialState(MOCK_CONFIG);
+      state = createReducer(
+        state,
+        { type: "INPUT_CHAR", char: "my-note" },
+        MOCK_CONFIG,
+      ).state;
+      state = { ...state, selectedIndex: state.items.length };
+      const result = createReducer(state, { type: "ENTER" }, MOCK_CONFIG);
+
+      expect(result.done).toBe(true);
+      expect(result.createNew).toBe(true);
+      expect(result.state.query).toBe("my-note");
+    });
+
+    test("Should do nothing when a regular item is selected", () => {
+      const state = createInitialState(MOCK_CONFIG);
+      const result = createReducer(state, { type: "ENTER" }, MOCK_CONFIG);
+
+      expect(result.done).toBe(false);
+      expect(result.createNew).toBeUndefined();
     });
   });
 
@@ -232,6 +274,10 @@ describe("search", () => {
   describe("keyToAction", () => {
     test("Escape should map to CANCEL", () => {
       expect(keyToAction(ANSI.escape)).toEqual({ type: "CANCEL" });
+    });
+
+    test("Enter should map to ENTER", () => {
+      expect(keyToAction(ANSI.enter)).toEqual({ type: "ENTER" });
     });
 
     test("Tab should map to TAB", () => {
