@@ -23,6 +23,8 @@ export type StashItem = {
   path: string;
   mtime: Date;
   size: number;
+  matchedIndices: Array<number>;
+  score: number;
 };
 
 export const ANSI = {

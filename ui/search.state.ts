@@ -11,6 +11,7 @@ import {
   moveWordLeft,
   moveWordRight,
 } from "./text-field";
+import { fuzzy } from "./fuzzy";
 
 const filterItems = (query: string, config: Config) =>
   getStashItems(config).filter((item) =>
@@ -29,7 +30,7 @@ const updateQueryAndItems = (
       ...state,
       query: newQuery,
       cursorPosition: newCursorPosition,
-      items: filterItems(newQuery, config),
+      items: fuzzy(newQuery, state.items),
       selectedIndex: 0,
     },
   };
@@ -62,24 +63,25 @@ export const createInitialState = (
   config: Config,
   arg: string = "",
 ): SearchState => {
-  const items = getStashItems(config);
+  // const items = fuzzy("", getStashItems(config));
 
-  if (arg) {
-    return {
-      query: arg,
-      cursorPosition: arg.length,
-      selectedIndex: 0,
-      items: items.filter((item) =>
-        item.name.toLowerCase().includes(arg.toLowerCase()),
-      ),
-    };
-  }
+  // if (arg) {
+  //   return {
+  //     query: arg,
+  //     cursorPosition: arg.length,
+  //     selectedIndex: 0,
+  //     items: items.filter((item) =>
+  //       item.name.toLowerCase().includes(arg.toLowerCase()),
+  //     ),
+  //   };
+  // }
+  const items = getStashItems(config);
 
   return {
     query: "",
     cursorPosition: 0,
     selectedIndex: 0,
-    items,
+    items: fuzzy(arg, items),
   };
 };
 

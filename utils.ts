@@ -109,6 +109,7 @@ export function getStashItems(config: Config): StashItem[] {
       path: fullPath,
       mtime: stats.mtime,
       size: stats.size,
+      score: 0,
     });
   }
 
