@@ -95,20 +95,24 @@ export function getTerminalSize() {
 export function getStashItems(config: Config): StashItem[] {
   const stashPath = getStashDir(config);
 
-  const items = readdirSync(stashPath);
+  const entries = readdirSync(stashPath);
 
-  return items.map((item) => {
-    const fullPath = join(stashPath, item);
+  const items: Array<StashItem> = [];
+
+  for (const entry of entries) {
+    const fullPath = join(stashPath, entry);
     const stats = statSync(fullPath);
 
-    return {
-      name: item,
+    items.push({
+      name: entry,
       type: stats.isFile() ? "file" : "directory",
       path: fullPath,
       mtime: stats.mtime,
       size: stats.size,
-    };
-  });
+    });
+  }
+
+  return items.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
 }
 
 export function isDirectory(path: string) {
