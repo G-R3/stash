@@ -19,7 +19,7 @@ export const createInitialState = (initialName?: string): State => ({
 });
 
 export type StateActions =
-  | { type: "INPUT_CHAR"; char: string }
+  | { type: "INPUT_TEXT"; text: string }
   | { type: "TAB" }
   | { type: "TOGGLE_TYPE" }
   | { type: "TOGGLE_PREFIX" }
@@ -43,14 +43,14 @@ export const createReducer = (
   action: StateActions,
 ): ReducerResult => {
   switch (action.type) {
-    case "INPUT_CHAR": {
+    case "INPUT_TEXT": {
       if (state.focusedField !== 0) {
         return { done: false, state };
       }
 
       const { text, cursorPosition } = insertChar(
         { text: state.text, cursorPosition: state.cursorPosition },
-        action.char,
+        action.text,
       );
 
       return {
@@ -352,6 +352,6 @@ export const keyToAction = (key: string): StateActions => {
     case ANSI.space:
       return { type: "SPACE" };
     default:
-      return { type: "INPUT_CHAR", char: key };
+      return { type: "INPUT_TEXT", text: key };
   }
 };

@@ -51,12 +51,12 @@ describe("search", () => {
     });
   });
 
-  describe("INPUT_CHAR", () => {
+  describe("INPUT_TEXT", () => {
     test("Should filter items that match the query (case insensitive)", () => {
       const state = createInitialState(MOCK_CONFIG);
       const result = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "test" },
+        { type: "INPUT_TEXT", text: "test" },
         MOCK_CONFIG,
       );
       expect(result.state.items).toEqual(
@@ -70,7 +70,7 @@ describe("search", () => {
       const state = createInitialState(MOCK_CONFIG);
       const result = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "zzzznotfound" },
+        { type: "INPUT_TEXT", text: "zzzznotfound" },
         MOCK_CONFIG,
       );
       expect(result.state.items).toHaveLength(0);
@@ -80,17 +80,17 @@ describe("search", () => {
       let state = createInitialState(MOCK_CONFIG);
       state = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "notes" },
+        { type: "INPUT_TEXT", text: "notes" },
         MOCK_CONFIG,
       ).state;
       state = createReducer(
         state,
-        { type: "INPUT_CHAR", char: " " },
+        { type: "INPUT_TEXT", text: " " },
         MOCK_CONFIG,
       ).state;
       state = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "folder" },
+        { type: "INPUT_TEXT", text: "folder" },
         MOCK_CONFIG,
       ).state;
 
@@ -106,7 +106,7 @@ describe("search", () => {
       state = { ...state, selectedIndex: 3 };
       const result = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "x" },
+        { type: "INPUT_TEXT", text: "x" },
         MOCK_CONFIG,
       );
       expect(result.state.selectedIndex).toBe(0);
@@ -194,7 +194,7 @@ describe("search", () => {
       let state = createInitialState(MOCK_CONFIG);
       state = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "my-note" },
+        { type: "INPUT_TEXT", text: "my-note" },
         MOCK_CONFIG,
       ).state;
       state = { ...state, selectedIndex: state.items.length };
@@ -226,7 +226,7 @@ describe("search", () => {
       let state = createInitialState(MOCK_CONFIG);
       state = createReducer(
         state,
-        { type: "INPUT_CHAR", char: "test" },
+        { type: "INPUT_TEXT", text: "test" },
         MOCK_CONFIG,
       ).state;
       state = { ...state, selectedIndex: 2 };
@@ -260,7 +260,7 @@ describe("search", () => {
       // use query with not result to have no items selected
       const state = createReducer(
         initialState,
-        { type: "INPUT_CHAR", char: "zzzznotfound" },
+        { type: "INPUT_TEXT", text: "zzzznotfound" },
         MOCK_CONFIG,
       ).state;
 
@@ -325,17 +325,17 @@ describe("search", () => {
       expect(keyToAction(ANSI.ctrlD)).toEqual({ type: "DELETE_ITEM" });
     });
 
-    test("Space should map to INPUT_CHAR", () => {
+    test("Space should map to INPUT_TEXT", () => {
       expect(keyToAction(ANSI.space)).toEqual({
-        type: "INPUT_CHAR",
-        char: " ",
+        type: "INPUT_TEXT",
+        text: " ",
       });
     });
 
-    test("Regular characters should map to INPUT_CHAR", () => {
-      expect(keyToAction("a")).toEqual({ type: "INPUT_CHAR", char: "a" });
-      expect(keyToAction("Z")).toEqual({ type: "INPUT_CHAR", char: "Z" });
-      expect(keyToAction("5")).toEqual({ type: "INPUT_CHAR", char: "5" });
+    test("Regular characters should map to INPUT_TEXT", () => {
+      expect(keyToAction("a")).toEqual({ type: "INPUT_TEXT", text: "a" });
+      expect(keyToAction("Z")).toEqual({ type: "INPUT_TEXT", text: "Z" });
+      expect(keyToAction("5")).toEqual({ type: "INPUT_TEXT", text: "5" });
     });
   });
 });

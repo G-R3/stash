@@ -284,9 +284,9 @@ describe("keyToAction navigation mappings", () => {
     expect(keyToAction(ANSI.backspaceAlt)).toEqual({ type: "BACKSPACE" });
   });
 
-  test("Regular characters should map to INPUT_CHAR action", () => {
-    expect(keyToAction("a")).toEqual({ type: "INPUT_CHAR", char: "a" });
-    expect(keyToAction("Z")).toEqual({ type: "INPUT_CHAR", char: "Z" });
-    expect(keyToAction("5")).toEqual({ type: "INPUT_CHAR", char: "5" });
+  test("Regular characters should map to INPUT_TEXT action", () => {
+    expect(keyToAction("a")).toEqual({ type: "INPUT_TEXT", text: "a" });
+    expect(keyToAction("Z")).toEqual({ type: "INPUT_TEXT", text: "Z" });
+    expect(keyToAction("5")).toEqual({ type: "INPUT_TEXT", text: "5" });
   });
 });

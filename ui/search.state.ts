@@ -36,7 +36,7 @@ const updateQueryAndItems = (
 };
 
 export type StateActions =
-  | { type: "INPUT_CHAR"; char: string }
+  | { type: "INPUT_TEXT"; text: string }
   | { type: "TAB" }
   | { type: "CANCEL" }
   | { type: "ARROW_LEFT" }
@@ -89,10 +89,10 @@ export const createReducer = (
   config: Config,
 ): ReducerResult => {
   switch (action.type) {
-    case "INPUT_CHAR": {
+    case "INPUT_TEXT": {
       const { text, cursorPosition } = insertChar(
         { text: state.query, cursorPosition: state.cursorPosition },
-        action.char,
+        action.text,
       );
 
       return updateQueryAndItems(state, text, cursorPosition, config);
@@ -316,6 +316,6 @@ export const keyToAction = (key: string): StateActions => {
     case ANSI.ctrlD:
       return { type: "DELETE_ITEM" };
     default:
-      return { type: "INPUT_CHAR", char: key };
+      return { type: "INPUT_TEXT", text: key };
   }
 };
