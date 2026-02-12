@@ -21,6 +21,15 @@ function isWordBoundary(name: string, index: number) {
   );
 }
 
+function calculateLinearRecencyScore(item: StashItem) {
+  const age = Date.now() - item.mtime.getTime();
+
+  if (age <= 0) return RECENCY_BONUS;
+  if (age >= RECENCY_WINDOW_MS) return 0;
+
+  return Math.round(RECENCY_BONUS * (1 - age / RECENCY_WINDOW_MS));
+}
+
 export function findFuzzyMatch(
   query: string,
   itemName: string,
@@ -29,12 +38,12 @@ export function findFuzzyMatch(
   let namePointer = 0;
   let score = 0;
   const matchedIndices: number[] = [];
+  let previousMatch = false;
 
   // frt frt frt frt frt
   // first-first
   //
   while (namePointer < itemName.length && queryPointer < query.length) {
-    let previousMatch = false;
     const queryChar = query[queryPointer];
     const nameChar = itemName[namePointer];
 
@@ -70,15 +79,6 @@ export function findFuzzyMatch(
     matchedIndices,
     score,
   };
-}
-
-function calculateLinearRecencyScore(item: StashItem) {
-  const age = Date.now() - item.mtime.getTime();
-
-  if (age <= 0) return RECENCY_BONUS;
-  if (age >= RECENCY_WINDOW_MS) return 0;
-
-  return Math.round(RECENCY_BONUS * (1 - age / RECENCY_WINDOW_MS));
 }
 
 function fuzzyMatch(query: string, item: StashItem): StashItem | null {
