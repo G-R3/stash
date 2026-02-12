@@ -13,6 +13,7 @@ import {
 } from "../utils";
 import { createUI } from "./create";
 import { createInitialState, createReducer, keyToAction } from "./search.state";
+import { highlightMatchedIndices } from "./fuzzy";
 
 const iconMap = {
   directory: "📁",
@@ -74,7 +75,10 @@ function render(state: SearchState) {
   items.forEach((item, index) => {
     const suffix = isDirectory(item.path) ? `/` : "";
     const paddedName = padEnd(
-      iconMap[item.type] + " " + item.name + suffix,
+      iconMap[item.type] +
+        " " +
+        highlightMatchedIndices(item, item.matchedIndices) +
+        suffix,
       Math.min(cols - 4, 30),
     );
 

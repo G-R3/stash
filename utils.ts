@@ -110,6 +110,7 @@ export function getStashItems(config: Config): StashItem[] {
       mtime: stats.mtime,
       size: stats.size,
       score: 0,
+      matchedIndices: [],
     });
   }
 

@@ -12,6 +12,7 @@ function createTestItem(name: string, daysAgo: number = 0): StashItem {
     size: 0,
     type: "directory",
     mtime,
+    matchedIndices: [],
   };
 }
 
@@ -35,13 +36,14 @@ describe("fuzzy finding", () => {
 
   test("exact match should be the highest score", () => {
     const items = [
-      createTestItem("first"),
+      //   createTestItem("first"),
       createTestItem("first-first"),
-      createTestItem("not-even-close"),
-      createTestItem("going-first"),
+      createTestItem("first", 5),
+      //   createTestItem("not-even-close"),
+      //   createTestItem("going-first"),
     ];
 
-    console.log(fuzzy("frtfrtfrtfrtfrt", items));
+    console.log(fuzzy("frt", items));
 
     // expect(matches).toHaveLength(1);
     // expect(matches[0].name).toBe("first");

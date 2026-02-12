@@ -24,13 +24,15 @@ const updateQueryAndItems = (
   newCursorPosition: number,
   config: Config,
 ): ReducerResult => {
+  const items = getStashItems(config);
+
   return {
     done: false,
     state: {
       ...state,
       query: newQuery,
       cursorPosition: newCursorPosition,
-      items: fuzzy(newQuery, state.items),
+      items: fuzzy(newQuery, items),
       selectedIndex: 0,
     },
   };
@@ -78,8 +80,8 @@ export const createInitialState = (
   const items = getStashItems(config);
 
   return {
-    query: "",
-    cursorPosition: 0,
+    query: arg,
+    cursorPosition: arg.length,
     selectedIndex: 0,
     items: fuzzy(arg, items),
   };
