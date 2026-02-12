@@ -43,8 +43,6 @@ describe("fuzzy finding", () => {
       //   createTestItem("going-first"),
     ];
 
-    console.log(fuzzy("frt", items));
-
     // expect(matches).toHaveLength(1);
     // expect(matches[0].name).toBe("first");
   });
