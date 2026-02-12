@@ -226,7 +226,7 @@ export const createReducer = (
       if (state.cursorPosition === 0) {
         return {
           done: false,
-          state: { ...state, items: getStashItems(config) },
+          state: { ...state, items: fuzzy("", getStashItems(config)) },
         };
       }
 
