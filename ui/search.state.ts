@@ -224,9 +224,16 @@ export const createReducer = (
     }
     case "BACKSPACE": {
       if (state.cursorPosition === 0) {
+        if (!state.query.length) {
+          return {
+            done: false,
+            state: { ...state, items: fuzzy("", getStashItems(config)) },
+          };
+        }
+
         return {
           done: false,
-          state: { ...state, items: fuzzy("", getStashItems(config)) },
+          state,
         };
       }
 
