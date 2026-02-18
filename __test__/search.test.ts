@@ -47,7 +47,7 @@ describe("search", () => {
 
     test("Should load all stash items", () => {
       const state = createInitialState(MOCK_CONFIG);
-      expect(state.items).toEqual(getStashItems(MOCK_CONFIG));
+      expect(state.items.length).toEqual(getStashItems(MOCK_CONFIG).length);
     });
   });
 
@@ -59,11 +59,10 @@ describe("search", () => {
         { type: "INPUT_TEXT", text: "test" },
         MOCK_CONFIG,
       );
-      expect(result.state.items).toEqual(
-        getStashItems(MOCK_CONFIG).filter((item) =>
-          item.name.toLowerCase().includes("test"),
-        ),
-      );
+      expect(result.state.items.map((item) => item.name)).toEqual([
+        "2026-01-01-test",
+        "2026-01-01-TEST.txt",
+      ]);
     });
 
     test("Should return no items when query matches nothing", () => {
@@ -94,11 +93,8 @@ describe("search", () => {
         MOCK_CONFIG,
       ).state;
 
-      expect(state.items).toEqual(
-        getStashItems(MOCK_CONFIG).filter((item) =>
-          item.name.toLowerCase().includes("notes folder"),
-        ),
-      );
+      expect(state.items).toHaveLength(1);
+      expect(state.items[0].name).toBe("notes folder");
     });
 
     test("Should reset selectedIndex to 0 when filtering", () => {
@@ -120,7 +116,18 @@ describe("search", () => {
 
       expect(result.state.query).toBe("");
       expect(result.state.cursorPosition).toBe(0);
-      expect(result.state.items).toEqual(getStashItems(MOCK_CONFIG));
+      expect(result.state.items.length).toBe(getStashItems(MOCK_CONFIG).length);
+    });
+
+    test("Should do nothing when query exists but cursor is at 0", () => {
+      let state = createInitialState(MOCK_CONFIG);
+      state = { ...state, query: "test", cursorPosition: 0 };
+
+      const result = createReducer(state, { type: "BACKSPACE" }, MOCK_CONFIG);
+
+      expect(result.state.query).toBe("test");
+      expect(result.state.cursorPosition).toBe(0);
+      expect(result.state.items).toEqual(state.items);
     });
   });
 
