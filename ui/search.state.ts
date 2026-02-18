@@ -1,6 +1,7 @@
-import { rmSync } from "fs";
+import { rmSync } from "node:fs";
 import { ANSI, type Config, type SearchState } from "../types";
 import { getStashItems } from "../utils";
+import { fuzzy } from "./fuzzy";
 import {
   deleteBack,
   insertChar,
@@ -11,12 +12,6 @@ import {
   moveWordLeft,
   moveWordRight,
 } from "./text-field";
-import { fuzzy } from "./fuzzy";
-
-const filterItems = (query: string, config: Config) =>
-  getStashItems(config).filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase()),
-  );
 
 const updateQueryAndItems = (
   state: SearchState,

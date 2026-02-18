@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { join } from "path";
+import { join } from "node:path";
 
 const ROOT_DIR = join(import.meta.dir, "..");
 

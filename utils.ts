@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readdirSync, statSync } from "fs";
-import { join } from "path";
+import { existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { ANSI, Commands, type Config, type StashItem } from "./types";
 
 export function style(text: string, styles: string[]): string {
@@ -59,7 +59,7 @@ export function showHelpMessage(command: string): void {
 }
 
 export function writeLine(text: string = ""): void {
-  process.stdout.write(text + "\n");
+  process.stdout.write(`${text}\n`);
 }
 
 export function write(text: string): void {

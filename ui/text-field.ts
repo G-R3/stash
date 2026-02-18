@@ -52,8 +52,6 @@ export const moveLeft = (state: TextFieldState): TextFieldState => {
 };
 
 export const moveRight = (state: TextFieldState): TextFieldState => {
-  const newCursorPosition = state.cursorPosition + 1;
-
   return {
     ...state,
     cursorPosition: state.cursorPosition + 1,

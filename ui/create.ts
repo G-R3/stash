@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
-import { join } from "path";
+import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { ANSI, type Config, type State } from "../types";
 import {
   cleanUp,

@@ -1,8 +1,7 @@
-import { ANSI, type Config, type SearchState, StashItem } from "../types";
+import { ANSI, type Config, type SearchState } from "../types";
 import {
   cleanUp,
   clearScreen,
-  getStashItems,
   getTerminalSize,
   isDirectory,
   padEnd,
@@ -12,8 +11,8 @@ import {
   writeLine,
 } from "../utils";
 import { createUI } from "./create";
-import { createInitialState, createReducer, keyToAction } from "./search.state";
 import { highlightMatchedIndices } from "./fuzzy";
+import { createInitialState, createReducer, keyToAction } from "./search.state";
 
 const iconMap = {
   directory: "📁",

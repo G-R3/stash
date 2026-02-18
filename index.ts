@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { parseArgs } from "util";
+import { parseArgs } from "node:util";
 import { config } from "./config";
 import { Commands } from "./types";
 import { createUI } from "./ui/create";
