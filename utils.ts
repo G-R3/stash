@@ -2,11 +2,15 @@ import { existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { ANSI, Commands, type Config, type StashItem } from "./types";
 
-export function style(text: string, styles: string[]): string {
+export function style(
+  text: string,
+  styles: string[],
+  restoreStyles: string[] = [],
+): string {
   if (styles.length === 0) {
     return text;
   }
-  return `${styles.join("")}${text}${ANSI.reset}`;
+  return `${styles.join("")}${text}${ANSI.reset}${restoreStyles.join("")}`;
 }
 
 export function clearScreen(): void {

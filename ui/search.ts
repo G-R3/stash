@@ -72,19 +72,20 @@ function render(state: SearchState) {
   writeLine();
 
   items.forEach((item, index) => {
+    const isSelected = state.selectedIndex === index;
+    const restoreStyles = isSelected ? [ANSI.inverse] : [];
     const suffix = isDirectory(item.path) ? `/` : "";
     const paddedName = padEnd(
       iconMap[item.type] +
         " " +
-        highlightMatchedIndices(item, item.matchedIndices) +
+        highlightMatchedIndices(item, item.matchedIndices, restoreStyles) +
         suffix,
       Math.min(cols - 4, 30),
     );
 
     const time = relativeTime(item.mtime);
-    const isSelected = state.selectedIndex === index;
-
-    const line = paddedName + style(`      (${time})`, [ANSI.dim]);
+    const line =
+      paddedName + style(`      (${time})`, [ANSI.dim], restoreStyles);
 
     writeLine(isSelected ? style(line, [ANSI.inverse]) : line);
   });

@@ -187,6 +187,7 @@ export function fuzzy(query: string, items: StashItem[]) {
 export const highlightMatchedIndices = (
   item: StashItem,
   matchedIndices: number[],
+  restoreStyles: string[] = [],
 ) => {
   if (!matchedIndices || matchedIndices.length === 0) {
     return item.name;
@@ -196,7 +197,7 @@ export const highlightMatchedIndices = (
   let highlightedName = "";
   for (let i = 0; i < item.name.length; i++) {
     if (matchedSet.has(i)) {
-      highlightedName += style(item.name[i], [ANSI.cyan]);
+      highlightedName += style(item.name[i], [ANSI.cyan], restoreStyles);
     } else {
       highlightedName += item.name[i];
     }
