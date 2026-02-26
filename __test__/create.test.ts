@@ -119,7 +119,10 @@ describe("create", () => {
       text: "my-file.txt",
       isFile: true,
     };
-    const result = createStashItem(state, MOCK_CONFIG);
+    const result = createStashItem(
+      { text: state.text, isFile: state.isFile, prefix: state.prefix },
+      MOCK_CONFIG,
+    );
 
     expect(result.success).toBe(true);
     expect(result.message).toBe("Created file: my-file.txt");
@@ -137,7 +140,10 @@ describe("create", () => {
     const currentDate = new Date().toISOString().split("T")[0];
     const expectedName = `${currentDate}-my-file.txt`;
 
-    const result = createStashItem(state, MOCK_CONFIG);
+    const result = createStashItem(
+      { text: state.text, isFile: state.isFile, prefix: state.prefix },
+      MOCK_CONFIG,
+    );
     expect(result.success).toBe(true);
     expect(result.message).toBe(`Created file: ${expectedName}`);
     expect(existsSync(join(MOCK_CONFIG.stashDir, expectedName))).toBe(true);
@@ -153,7 +159,10 @@ describe("create", () => {
     const currentDate = new Date().toISOString().split("T")[0];
     const expectedName = `${currentDate}-my-folder`;
 
-    const result = createStashItem(state, MOCK_CONFIG);
+    const result = createStashItem(
+      { text: state.text, isFile: state.isFile, prefix: state.prefix },
+      MOCK_CONFIG,
+    );
     expect(result.success).toBe(true);
     expect(result.message).toBe(`Created directory: ${expectedName}`);
     expect(existsSync(join(MOCK_CONFIG.stashDir, expectedName))).toBe(true);
@@ -163,7 +172,10 @@ describe("create", () => {
     const state = { ...createInitialState(), text: "existing", isFile: false };
 
     mkdirSync(join(MOCK_CONFIG.stashDir, "existing"));
-    const result = createStashItem(state, MOCK_CONFIG);
+    const result = createStashItem(
+      { text: state.text, isFile: state.isFile, prefix: state.prefix },
+      MOCK_CONFIG,
+    );
 
     expect(result.success).toBe(false);
     expect(result.message).toBe("File/directory already exists: existing");
