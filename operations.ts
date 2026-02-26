@@ -1,13 +1,13 @@
 import {
   existsSync,
   mkdirSync,
+  readdirSync,
   rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
 import type { Config, StashItem } from "./types";
-import { currentDate, getStashItems } from "./utils";
 
 export type CreateStashItemInput = {
   text: string;
@@ -27,10 +27,49 @@ export type CreateStashItemResult = {
   };
 };
 
-export const listStashItems = (config: Config): StashItem[] => getStashItems(config);
+export const currentDate = new Date().toISOString().split("T")[0];
 
-export const stashIsEmpty = (config: Config): boolean =>
-  listStashItems(config).length === 0;
+export function getStashDir(config: Config) {
+  if (!existsSync(config.stashDir)) {
+    console.log(
+      `Stash directory ${config.stashDir} does not exist, creating...`,
+    );
+    mkdirSync(config.stashDir, { recursive: true });
+  }
+
+  return config.stashDir;
+}
+
+export const getStashItems = (config: Config): StashItem[] => {
+  const stashPath = getStashDir(config);
+
+  const entries = readdirSync(stashPath);
+
+  const items: Array<StashItem> = [];
+
+  for (const entry of entries) {
+    const fullPath = join(stashPath, entry);
+    const stats = statSync(fullPath);
+
+    items.push({
+      name: entry,
+      type: stats.isFile() ? "file" : "directory",
+      path: fullPath,
+      mtime: stats.mtime,
+      size: stats.size,
+      score: 0,
+      matchedIndices: [],
+    });
+  }
+
+  return items.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+};
+
+export function isStashEmpty(config: Config) {
+  const items = getStashItems(config);
+
+  return items.length === 0;
+}
 
 export function createStashItem(
   state: CreateStashItemInput,
