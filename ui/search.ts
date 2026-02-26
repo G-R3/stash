@@ -4,7 +4,7 @@ import {
   clearScreen,
   getTerminalSize,
   isDirectory,
-  padEnd,
+  padEndVisible,
   relativeTime,
   style,
   write,
@@ -75,7 +75,7 @@ function render(state: SearchState) {
     const isSelected = state.selectedIndex === index;
     const restoreStyles = isSelected ? [ANSI.inverse] : [];
     const suffix = isDirectory(item.path) ? `/` : "";
-    const paddedName = padEnd(
+    const paddedName = padEndVisible(
       iconMap[item.type] +
         " " +
         highlightMatchedIndices(item, item.matchedIndices, restoreStyles) +
