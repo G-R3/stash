@@ -80,6 +80,14 @@ export function isDirectory(path: string) {
   return statSync(path).isDirectory();
 }
 
+/** Match ANSI CSI sequences (e.g. ESC[36m, ESC[0m) so we can measure the visible length. */
+const ESC = "\u001B";
+const ANSI_CSI_RE = new RegExp(`${ESC}\\[[0-9;]*[a-zA-Z]`, "g");
+
+export function visibleLength(str: string): number {
+  return str.replace(ANSI_CSI_RE, "").length;
+}
+
 export function padEnd(
   str: string,
   length: number,
@@ -89,6 +97,19 @@ export function padEnd(
     return str;
   }
   return str + char.repeat(length - str.length);
+}
+
+/** Pads string so its visible (display) length is at least `length`. We can  use this for strings that may contain ANSI codes :) */
+export function padEndVisible(
+  str: string,
+  length: number,
+  char: string = " ",
+): string {
+  const visible = visibleLength(str);
+  if (visible >= length) {
+    return str;
+  }
+  return str + char.repeat(length - visible);
 }
 
 export function relativeTime(date: Date) {
