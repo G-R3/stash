@@ -70,55 +70,11 @@ export function write(text: string): void {
   process.stdout.write(text);
 }
 
-export const currentDate = new Date().toISOString().split("T")[0];
-
-export function getStashDir(config: Config) {
-  if (!existsSync(config.stashDir)) {
-    console.log(
-      `Stash directory ${config.stashDir} does not exist, creating...`,
-    );
-    mkdirSync(config.stashDir, { recursive: true });
-  }
-
-  return config.stashDir;
-}
-
-export function isStashEmpty(config: Config) {
-  const stash = getStashItems(config);
-
-  return stash.length === 0;
-}
-
 export function getTerminalSize() {
   return {
     rows: process.stdout.rows || process.stderr.rows || 24,
     cols: process.stdout.columns || process.stderr.columns || 80,
   };
-}
-
-export function getStashItems(config: Config): StashItem[] {
-  const stashPath = getStashDir(config);
-
-  const entries = readdirSync(stashPath);
-
-  const items: Array<StashItem> = [];
-
-  for (const entry of entries) {
-    const fullPath = join(stashPath, entry);
-    const stats = statSync(fullPath);
-
-    items.push({
-      name: entry,
-      type: stats.isFile() ? "file" : "directory",
-      path: fullPath,
-      mtime: stats.mtime,
-      size: stats.size,
-      score: 0,
-      matchedIndices: [],
-    });
-  }
-
-  return items.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
 }
 
 export function isDirectory(path: string) {
