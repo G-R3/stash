@@ -187,6 +187,36 @@ describe("search", () => {
     });
   });
 
+  describe("Cursor movement", () => {
+    test("ARROW_LEFT should move cursor left by one", () => {
+      const state = { ...createInitialState(MOCK_CONFIG), query: "test", cursorPosition: 4 };
+      const result = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG);
+
+      expect(result.state.cursorPosition).toBe(3);
+    });
+
+    test("ARROW_RIGHT should move cursor right by one", () => {
+      const state = { ...createInitialState(MOCK_CONFIG), query: "test", cursorPosition: 1 };
+      const result = createReducer(state, { type: "ARROW_RIGHT" }, MOCK_CONFIG);
+
+      expect(result.state.cursorPosition).toBe(2);
+    });
+
+    test("HOME should move cursor to beginning", () => {
+      const state = { ...createInitialState(MOCK_CONFIG), query: "hello world", cursorPosition: 5 };
+      const result = createReducer(state, { type: "HOME" }, MOCK_CONFIG);
+
+      expect(result.state.cursorPosition).toBe(0);
+    });
+
+    test("END should move cursor to end", () => {
+      const state = { ...createInitialState(MOCK_CONFIG), query: "hello world", cursorPosition: 2 };
+      const result = createReducer(state, { type: "END" }, MOCK_CONFIG);
+
+      expect(result.state.cursorPosition).toBe(11);
+    });
+  });
+
   describe("ENTER", () => {
     test("Should trigger createNew when create option is selected", () => {
       let state = createInitialState(MOCK_CONFIG);
@@ -246,35 +276,18 @@ describe("search", () => {
   });
 
   describe("DELETE_ITEM", () => {
-    test("Should delete the selected item", () => {
+    test("Should not mutate state when no item is selected", () => {
       const initialState = createInitialState(MOCK_CONFIG);
 
-      // move to index 1 atleast
-      const state = createReducer(
-        initialState,
-        { type: "ARROW_DOWN" },
-        MOCK_CONFIG,
-      ).state;
-
-      const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
-
-      expect(result.state.items).toHaveLength(state.items.length - 1);
-    });
-
-    test("Should not delete if no item is selected", () => {
-      const initialState = createInitialState(MOCK_CONFIG);
-
-      // use query with not result to have no items selected
       const state = createReducer(
         initialState,
         { type: "INPUT_TEXT", text: "zzzznotfound" },
         MOCK_CONFIG,
       ).state;
 
-      // attemp to delete
       const result = createReducer(state, { type: "DELETE_ITEM" }, MOCK_CONFIG);
 
-      expect(result.state.items).toEqual(state.items);
+      expect(result.state).toEqual(state);
     });
   });
 

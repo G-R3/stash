@@ -1,5 +1,4 @@
-import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { createStashItem } from "../operations";
 import { ANSI, type Config, type State } from "../types";
 import {
   cleanUp,
@@ -63,40 +62,10 @@ export function createUI(config: Config, initialName?: string) {
 }
 
 export const createItem = (state: State, config: Config) => {
-  const name = state.prefix ? `${currentDate}-${state.text}` : state.text;
-  const fullPath = join(config.stashDir, name);
-
-  if (existsSync(fullPath)) {
-    return {
-      success: false,
-      message: `File/directory already exists: ${name}`,
-      data: {
-        name,
-        type: state.isFile ? "file" : "directory",
-        path: fullPath,
-      },
-    };
-  }
-
-  if (state.isFile) {
-    writeFileSync(fullPath, "", { encoding: "utf-8" });
-  } else {
-    mkdirSync(fullPath, { recursive: true });
-  }
-
-  const fileStats = statSync(fullPath);
-
-  return {
-    success: true,
-    message: `Created ${state.isFile ? "file" : "directory"}: ${name}`,
-    data: {
-      name,
-      type: state.isFile ? "file" : "directory",
-      path: fullPath,
-      mtime: fileStats.mtime,
-      size: fileStats.size,
-    },
-  };
+  return createStashItem(
+    { text: state.text, isFile: state.isFile, prefix: state.prefix },
+    config,
+  );
 };
 
 function render(state: State, error?: string) {

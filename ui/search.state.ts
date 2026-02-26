@@ -1,4 +1,4 @@
-import { rmSync } from "node:fs";
+import { deleteStashItem } from "../operations";
 import { ANSI, type Config, type SearchState } from "../types";
 import { getStashItems } from "../utils";
 import { fuzzy } from "./fuzzy";
@@ -249,7 +249,14 @@ export const createReducer = (
         };
       }
 
-      rmSync(itemToDelete.path, { recursive: true });
+      const deleted = deleteStashItem(itemToDelete.path);
+
+      if (!deleted) {
+        return {
+          done: false,
+          state,
+        };
+      }
 
       return {
         done: false,

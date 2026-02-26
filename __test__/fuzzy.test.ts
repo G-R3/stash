@@ -60,11 +60,47 @@ describe("fuzzy finding", () => {
     expect(pollReqMatches).toContain("polling-requests");
   });
 
+  test("prefers higher fuzzy score over recency when not exact", () => {
+    const items = [
+      createTestItem("abcdefxyz", 5),
+      createTestItem("a-----b-----c-----d-----e-----f", 0),
+    ];
+
+    const matches = fuzzy("abcdef", items);
+    expect(matches[0]?.name).toBe("abcdefxyz");
+  });
+
   test("prefers shorter names when scores and recency tie", () => {
     const items = [createTestItem("bb"), createTestItem("aaaa")];
 
     const matches = fuzzy("", items);
     expect(matches[0].name).toBe("bb");
+  });
+
+  test("uses alphabetical order as final tie breaker", () => {
+    const now = new Date();
+    const items = [
+      { ...createTestItem("b"), mtime: now },
+      { ...createTestItem("a"), mtime: now },
+    ];
+
+    const matches = fuzzy("", items);
+    expect(matches[0]?.name).toBe("a");
+    expect(matches[1]?.name).toBe("b");
+  });
+
+  test("matches across camelCase word boundaries", () => {
+    const items = [createTestItem("myHTTPServer"), createTestItem("myhelper")];
+    const matches = fuzzy("hs", items);
+
+    expect(matches.map((item) => item.name)).toContain("myHTTPServer");
+  });
+
+  test("matches across alpha-digit boundaries", () => {
+    const items = [createTestItem("v2release"), createTestItem("version")];
+    const matches = fuzzy("2r", items);
+
+    expect(matches.map((item) => item.name)).toContain("v2release");
   });
 
   test("findFuzzyMatch returns ordered matched indices", () => {
@@ -75,5 +111,10 @@ describe("fuzzy finding", () => {
     );
     expect(result).not.toBeNull();
     expect(result?.matchedIndices).toEqual([0, 1, 2, 3, 11, 12, 13, 14]);
+  });
+
+  test("findFuzzyMatch returns null when sequence cannot be formed", () => {
+    const result = findFuzzyMatch("zzz", "abc", "abc");
+    expect(result).toBeNull();
   });
 });

@@ -13,11 +13,15 @@ describe("CLI", () => {
     expect(output).toContain("Usage: stash [command] [query]");
   });
 
-  test.skip("Should create stash directory if it doesn't exist", async () => {
-    // TODO: Implement this test
-  });
+  test("Should show create help when create --help flag is provided", async () => {
+    const proc = Bun.spawn(
+      [process.execPath, "run", "index.ts", "create", "--help"],
+      {
+        cwd: ROOT_DIR,
+      },
+    );
+    const output = await new Response(proc.stdout).text();
 
-  test.skip("can call search with initial query arg - stash <query_to_search>", async () => {
-    // TODO: implement
+    expect(output).toContain("Usage: stash create");
   });
 });
