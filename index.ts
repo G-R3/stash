@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 import { parseArgs } from "node:util";
 import { config } from "./config";
+import { getStashDir, isStashEmpty } from "./operations";
 import { Commands } from "./types";
 import { createUI } from "./ui/create";
 import { searchUI } from "./ui/search";
-import { getStashDir, isStashEmpty, showHelpMessage } from "./utils";
+import { showHelpMessage } from "./utils";
 
 async function main() {
   getStashDir(config);

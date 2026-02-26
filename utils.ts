@@ -1,6 +1,5 @@
-import { existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
-import { ANSI, Commands, type Config, type StashItem } from "./types";
+import { statSync } from "node:fs";
+import { ANSI, Commands } from "./types";
 
 export function style(
   text: string,

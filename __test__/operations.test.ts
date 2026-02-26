@@ -10,8 +10,8 @@ import { join } from "node:path";
 import {
   createStashItem,
   deleteStashItem,
-  listStashItems,
-  stashIsEmpty,
+  getStashItems,
+  isStashEmpty,
 } from "../operations";
 import type { Config } from "../types";
 
@@ -76,7 +76,7 @@ describe("operations", () => {
       utimesSync(olderPath, new Date(now - 120_000), new Date(now - 120_000));
       utimesSync(newerPath, new Date(now - 30_000), new Date(now - 30_000));
 
-      const items = listStashItems(MOCK_CONFIG);
+      const items = getStashItems(MOCK_CONFIG);
 
       expect(items[0]?.name).toBe("newer.txt");
       expect(items[1]?.name).toBe("older.txt");
@@ -105,13 +105,13 @@ describe("operations", () => {
 
   describe("stashIsEmpty", () => {
     test("returns true for empty stash", () => {
-      expect(stashIsEmpty(MOCK_CONFIG)).toBe(true);
+      expect(isStashEmpty(MOCK_CONFIG)).toBe(true);
     });
 
     test("returns false when stash has items", () => {
       writeFileSync(join(MOCK_CONFIG.stashDir, "item.txt"), "item");
 
-      expect(stashIsEmpty(MOCK_CONFIG)).toBe(false);
+      expect(isStashEmpty(MOCK_CONFIG)).toBe(false);
     });
   });
 });

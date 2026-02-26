@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { getStashItems } from "../operations";
 import { ANSI, type Config } from "../types";
 import {
   createInitialState,
   createReducer,
   keyToAction,
 } from "../ui/search.state";
-import { getStashItems } from "../utils";
 
 const MOCK_CONFIG: Config = {
   stashDir: join(import.meta.dir, ".test-tmp"),
@@ -189,28 +189,44 @@ describe("search", () => {
 
   describe("Cursor movement", () => {
     test("ARROW_LEFT should move cursor left by one", () => {
-      const state = { ...createInitialState(MOCK_CONFIG), query: "test", cursorPosition: 4 };
+      const state = {
+        ...createInitialState(MOCK_CONFIG),
+        query: "test",
+        cursorPosition: 4,
+      };
       const result = createReducer(state, { type: "ARROW_LEFT" }, MOCK_CONFIG);
 
       expect(result.state.cursorPosition).toBe(3);
     });
 
     test("ARROW_RIGHT should move cursor right by one", () => {
-      const state = { ...createInitialState(MOCK_CONFIG), query: "test", cursorPosition: 1 };
+      const state = {
+        ...createInitialState(MOCK_CONFIG),
+        query: "test",
+        cursorPosition: 1,
+      };
       const result = createReducer(state, { type: "ARROW_RIGHT" }, MOCK_CONFIG);
 
       expect(result.state.cursorPosition).toBe(2);
     });
 
     test("HOME should move cursor to beginning", () => {
-      const state = { ...createInitialState(MOCK_CONFIG), query: "hello world", cursorPosition: 5 };
+      const state = {
+        ...createInitialState(MOCK_CONFIG),
+        query: "hello world",
+        cursorPosition: 5,
+      };
       const result = createReducer(state, { type: "HOME" }, MOCK_CONFIG);
 
       expect(result.state.cursorPosition).toBe(0);
     });
 
     test("END should move cursor to end", () => {
-      const state = { ...createInitialState(MOCK_CONFIG), query: "hello world", cursorPosition: 2 };
+      const state = {
+        ...createInitialState(MOCK_CONFIG),
+        query: "hello world",
+        cursorPosition: 2,
+      };
       const result = createReducer(state, { type: "END" }, MOCK_CONFIG);
 
       expect(result.state.cursorPosition).toBe(11);

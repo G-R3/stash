@@ -1,9 +1,8 @@
-import { createStashItem } from "../operations";
+import { createStashItem, currentDate } from "../operations";
 import { ANSI, type Config, type State } from "../types";
 import {
   cleanUp,
   clearScreen,
-  currentDate,
   getTerminalSize,
   style,
   write,

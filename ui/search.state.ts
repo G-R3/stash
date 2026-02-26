@@ -1,6 +1,5 @@
-import { deleteStashItem } from "../operations";
+import { deleteStashItem, getStashItems } from "../operations";
 import { ANSI, type Config, type SearchState } from "../types";
-import { getStashItems } from "../utils";
 import { fuzzy } from "./fuzzy";
 import {
   deleteBack,
