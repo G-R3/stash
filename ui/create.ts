@@ -33,7 +33,10 @@ export function createUI(config: Config, initialName?: string) {
       cleanUp();
 
       if (action.type === "SUBMIT") {
-        const createResult = createItem(state, config);
+        const createResult = createStashItem(
+          { text: state.text, isFile: state.isFile, prefix: state.prefix },
+          config,
+        );
 
         writeLine(
           style(createResult.message, [
@@ -59,13 +62,6 @@ export function createUI(config: Config, initialName?: string) {
 
   render(state);
 }
-
-export const createItem = (state: State, config: Config) => {
-  return createStashItem(
-    { text: state.text, isFile: state.isFile, prefix: state.prefix },
-    config,
-  );
-};
 
 function render(state: State, error?: string) {
   clearScreen();
