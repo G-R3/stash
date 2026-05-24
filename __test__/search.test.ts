@@ -258,11 +258,43 @@ describe("search", () => {
       expect(result.state.query).toBe("my-note");
     });
 
-    test("Should do nothing when a regular item is selected", () => {
+    test("Should do nothing when a non-directory item is selected", () => {
       const state = createInitialState(MOCK_CONFIG);
-      const result = createReducer(state, { type: "ENTER" }, MOCK_CONFIG);
+      const result = createReducer(
+        {
+          ...state,
+          selectedIndex: state.items.findIndex(
+            (item) => item.type !== "directory",
+          ),
+        },
+        { type: "ENTER" },
+        MOCK_CONFIG,
+      );
 
       expect(result.done).toBe(false);
+      expect(result.navigateToPath).toBeUndefined();
+      expect(result.createNew).toBeUndefined();
+    });
+
+    test("Should return navigateToPath when a directory item is selected", () => {
+      const state = createInitialState(MOCK_CONFIG);
+
+      const selectedItemIndex = state.items.findIndex(
+        (item) => item.type === "directory",
+      );
+      const selectedItem = state.items[selectedItemIndex];
+
+      const result = createReducer(
+        {
+          ...state,
+          selectedIndex: selectedItemIndex,
+        },
+        { type: "ENTER" },
+        MOCK_CONFIG,
+      );
+
+      expect(result.done).toBe(true);
+      expect(result.navigateToPath).toBe(selectedItem.path);
       expect(result.createNew).toBeUndefined();
     });
   });
