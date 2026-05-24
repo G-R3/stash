@@ -43,8 +43,7 @@ export function searchUI(config: Config, arg?: string) {
       }
 
       if (result.navigateToPath) {
-        process.stdout.write(`${result.navigateToPath}`);
-        return;
+        process.stdout.write(`${result.navigateToPath}\n`);
       }
 
       process.exit(0);
