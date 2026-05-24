@@ -53,6 +53,7 @@ export type ReducerResult = {
   state: SearchState;
   error?: string;
   createNew?: boolean;
+  navigateToPath?: string;
 };
 
 export const createInitialState = (
@@ -270,6 +271,13 @@ export const createReducer = (
       if (isCreateOption) {
         return { done: true, state, createNew: true };
       }
+
+      const selectedItem = state.items[state.selectedIndex];
+
+      if (selectedItem.type === "directory") {
+        return { done: true, state, navigateToPath: selectedItem.path };
+      }
+
       return { done: false, state };
     }
     case "CANCEL": {

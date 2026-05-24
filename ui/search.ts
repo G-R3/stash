@@ -42,6 +42,11 @@ export function searchUI(config: Config, arg?: string) {
         return;
       }
 
+      if (result.navigateToPath) {
+        process.stdout.write(`${result.navigateToPath}`);
+        return;
+      }
+
       process.exit(0);
     }
 
