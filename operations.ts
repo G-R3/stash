@@ -31,7 +31,7 @@ export const currentDate = new Date().toISOString().split("T")[0];
 
 export function getStashDir(config: Config) {
   if (!existsSync(config.stashDir)) {
-    console.log(
+    console.error(
       `Stash directory ${config.stashDir} does not exist, creating...`,
     );
     mkdirSync(config.stashDir, { recursive: true });

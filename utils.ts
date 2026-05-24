@@ -13,22 +13,22 @@ export function style(
 }
 
 export function clearScreen(): void {
-  process.stdout.write(ANSI.clearScreen);
-  process.stdout.write(ANSI.cursorHome);
-  process.stdout.write(ANSI.cursorHide);
+  process.stderr.write(ANSI.clearScreen);
+  process.stderr.write(ANSI.cursorHome);
+  process.stderr.write(ANSI.cursorHide);
 }
 
 export function cleanUp(): void {
   process.stdin.setRawMode(false);
   process.stdin.removeAllListeners("data");
   process.stdin.pause();
-  process.stdout.write(ANSI.cursorShow);
+  process.stderr.write(ANSI.cursorShow);
 }
 
 export function showHelpMessage(command: string): void {
   switch (command) {
     case Commands.CREATE:
-      console.log(`
+      process.stderr.write(`
             Usage: stash create
             
             Open interactive TUI to create a new file/directory
@@ -38,7 +38,7 @@ export function showHelpMessage(command: string): void {
     `);
       break;
     default:
-      console.log(`
+      process.stderr.write(`
                 Usage: stash [command] [query]
     
                 Run an interactive TUI to browse, search, and manage stashed files/directories.
@@ -62,17 +62,17 @@ export function showHelpMessage(command: string): void {
 }
 
 export function writeLine(text: string = ""): void {
-  process.stdout.write(`${text}\n`);
+  process.stderr.write(`${text}\n`);
 }
 
 export function write(text: string): void {
-  process.stdout.write(text);
+  process.stderr.write(text);
 }
 
 export function getTerminalSize() {
   return {
-    rows: process.stdout.rows || process.stderr.rows || 24,
-    cols: process.stdout.columns || process.stderr.columns || 80,
+    rows: process.stderr.rows || process.stdout.rows || 24,
+    cols: process.stderr.columns || process.stdout.columns || 80,
   };
 }
 
