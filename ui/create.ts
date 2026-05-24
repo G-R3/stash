@@ -44,6 +44,10 @@ export function createUI(config: Config, initialName?: string) {
           ]),
         );
 
+        if (createResult.data.type === "directory" && createResult.success) {
+          process.stdout.write(`${createResult.data.path}\n`);
+        }
+
         process.exit(createResult.success ? 0 : 1);
       } else {
         process.exit(0);
